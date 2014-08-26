@@ -48,14 +48,12 @@ body
 
 /* Header */
 
-/* test background */
-
-
 #header {
 	position: relative;
 	display: block;
-	width: 800px;/* WAS 1100px */
+	width: 900px;/* WAS 1100px */
 	height: 0px;
+	/*z-index: -10;*/
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: -40px;
@@ -63,7 +61,7 @@ body
 
 #header h1 {
 	position: absolute;
-	/*left: -50px;*/
+	left: -50px;
 	color: #2e4d77;
     font: bold 50px/45px Roboto, Sans-Serif;
     letter-spacing: -1px;
@@ -73,20 +71,20 @@ body
 	position: absolute;
 	margin-left: auto;
 	margin-right: auto;
-	width: 800px; /* WAS 1100px */
+	width: 900px; /* WAS 1100px */
 	color: #2e4d77;
-    font:  30px Roboto, Sans-Serif;
+    font:  35px Roboto, Sans-Serif;
     letter-spacing: -1px;
 	list-style-type: none;
 	z-index: 10;
-	border-bottom: 1px solid #2e4d77;
+	border-bottom: 5px solid #2e4d77;
 }
 
 
 #header li {
 	display:inline-block;
-	padding-right: 20px;
-	padding-left: 20px;
+	padding-right: 40px;
+	padding-left: 40px;
 
 }
 
@@ -131,7 +129,7 @@ a.glow:hover, a.glow:focus {
 }
 
 a.text {
-font-size: 20px;
+font-size: 16px;
 text-align:left;
 color:#486D67;
 font-weight: bold;
@@ -140,32 +138,32 @@ font-family:'Source Sans Pro', sans-serif;
 
 .wrapper {
 	position: relative;
-	width: 800px;
+	width: 950px;
 	margin-right: auto;
 	margin-left: auto;
 	z-index: -10;
-	padding-top: 60px;
+	padding-top: 80px;
 }
 
 .wrapper p	{
 	/* padding-top: 120px; */
 	color:#2e4d77;
 	text-align: justify;
-	font-size: 20px;
+	font-size: 18px;
 	font-family:'Source Sans Pro', sans-serif;
 }
 
 /*Physics Page Stuff*/
 
 #physim {
-	width: 800;
+	width: 960;
 	margin-right: auto;
 	margin-left: auto;
 	position: relative;
 }
 
 #physim img {
-	width: 240px;
+	width: 300px;
 	display: inline;
 	padding-left: 15px;
 	z-index:-1;
@@ -181,8 +179,8 @@ font-family:'Source Sans Pro', sans-serif;
 }
 
 #physim a {
-	width: 240;
-	height: 240;
+	width: 300;
+	height: 300;
 	z-index: 1;
 	opacity: 0.65;
 }
@@ -204,8 +202,8 @@ font-family:'Source Sans Pro', sans-serif;
 
 
 .physblurb:target {
-	top: 250px;
-	width: 800px;
+	top: 300px;
+	width: 960px;
     -webkit-transition: 250ms linear 0s;
     -moz-transition: 250ms linear 0s;
     -o-transition: 250ms linear 0s;
@@ -218,7 +216,7 @@ font-family:'Source Sans Pro', sans-serif;
 	padding-top: 10px;
 	color:#2e4d77;
 	text-align: justify;
-	font-size: 20px;
+	font-size: 16px;
 	font-family:'Source Sans Pro', sans-serif;
 	float:left;
 }
@@ -232,14 +230,14 @@ font-family:'Source Sans Pro', sans-serif;
 /*Engineering Page Stuff*/
 
 #engim {
-	width: 800px;
+	width: 960;
 	margin-right: auto;
 	margin-left: auto;
 	position: relative;
 }
 
 #engim img {
-	width: 240px;
+	width: 300px;
 	display: inline;
 	padding-left: 15px;
 	z-index:-1;
@@ -255,8 +253,8 @@ font-family:'Source Sans Pro', sans-serif;
 }
 
 #engim a {
-	width: 240;
-	height: 240;
+	width: 300;
+	height: 300;
 	z-index: 1;
 	opacity: 0.65;
 }
@@ -278,8 +276,8 @@ font-family:'Source Sans Pro', sans-serif;
 
 
 .engblurb:target {
-	top: 250px;
-	width: 800px;
+	top: 300px;
+	width: 960px;
     -webkit-transition: 250ms linear 0s;
     -moz-transition: 250ms linear 0s;
     -o-transition: 250ms linear 0s;
@@ -293,7 +291,7 @@ font-family:'Source Sans Pro', sans-serif;
 	padding-top: 10px;
 	color:#2e4d77;
 	text-align: justify;
-	font-size: 20px;
+	font-size: 16px;
 	font-family:'Source Sans Pro', sans-serif;
 	float:left;
 }
@@ -311,7 +309,7 @@ font-family:'Source Sans Pro', sans-serif;
 	margin-right:auto;
 	margin-left:auto;
 	position:relative;
-	width: 800px;
+	width: 960px;
 }
 
 .cv table, td {
@@ -319,7 +317,7 @@ font-family:'Source Sans Pro', sans-serif;
 	text-align: left;
 	font-size: 16px;
 	font-family:'Source Sans Pro', sans-serif;
-	width: 800px;
+	width: 960px;
 
 
 }
@@ -350,7 +348,7 @@ font-family:'Source Sans Pro', sans-serif;
 	margin-right:auto;
 	margin-left:auto;
 	position:relative;
-	width: 800px;
+	width: 960px;
 	padding-top: 100px;
 }
 
@@ -359,7 +357,7 @@ font-family:'Source Sans Pro', sans-serif;
 	text-align: center;
 	font-size: 16px;
 	font-family:'Source Sans Pro', sans-serif;
-	width: 800px;
+	width: 960px;
 }
 
 .contact h5 {
