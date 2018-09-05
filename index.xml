@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ethan rosenthal</title>
+    <link>http://ethanrosenthal.com/</link>
+    <description>Recent content on ethan rosenthal</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Tue, 04 Sep 2018 23:38:57 -0400</lastBuildDate>
+    
+	<atom:link href="http://ethanrosenthal.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>About</title>
+      <link>http://ethanrosenthal.com/about/</link>
+      <pubDate>Tue, 04 Sep 2018 23:38:57 -0400</pubDate>
+      
+      <guid>http://ethanrosenthal.com/about/</guid>
+      <description>My name is Ethan Rosenthal, and I write a blog about data science called Data Piques.
+I am a Machine Learning Engineer at Dia&amp;amp;Co. I lead a team of scientists, engineers, and analysts focused on Styling and Customer Growth algorithms. I got my start in data science working at Birchbox. Prior to that, I earned a PhD in Physics from Columbia University where I studied unconvential superconductors.</description>
+    </item>
+    
+  </channel>
+</rss>
