@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+  
+
+  <title>
+    
+    
+        Time Series for scikit-learn People (Part I): Where&#39;s the X Matrix? | ethan rosenthal
+    
+  </title>
+
+  <meta name="title" content="Time Series for scikit-learn People (Part I): Where&#39;s the X Matrix? | ethan rosenthal">
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta name="generator" content="">
+  <base href="http://ethanrosenthal.com">
+
+  
+    <meta name="description" content="When I first started to learn about machine learning, specifically supervised learning, I eventually felt comfortable with taking some input $\mathbf{X}$, and determining a function $f(\mathbf{X})$ that best maps $\mathbf{X}$ to some known output value $y$. Separately, I dove a little into time series analysis and thought of this as a completely different paradigm. In time series, we don&rsquo;t think of things in terms of features or inputs; rather, we have the time series $y$, and $y$ alone, and we look at previous values of $y$ to predict future values of $y$.">
+  
+
+  
+    <meta name="author" content="Ethan Rosenthal">
+  
+
+  
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@eprosenthal">
+    <meta name="twitter:creator" content="@eprosenthal">
+  
+
+  <meta property="og:title" content="Time Series for scikit-learn People (Part I): Where&#39;s the X Matrix? | ethan rosenthal">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://ethanrosenthal.com">
+
+  
+    <meta property="og:image" content="http://ethanrosenthal.com/images/profile_pic2.jpg">
+  
+
+  
+    <meta name="og:description" content="When I first started to learn about machine learning, specifically supervised learning, I eventually felt comfortable with taking some input $\mathbf{X}$, and determining a function $f(\mathbf{X})$ that best maps $\mathbf{X}$ to some known output value $y$. Separately, I dove a little into time series analysis and thought of this as a completely different paradigm. In time series, we don&rsquo;t think of things in terms of features or inputs; rather, we have the time series $y$, and $y$ alone, and we look at previous values of $y$ to predict future values of $y$.">
+  
+
+  
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.ico">
+    <meta name="theme-color" content="#FFF">
+  
+
+  <link rel="canonical" href="http://ethanrosenthal.com/2018/01/28/time-series-for-scikit-learn-people-part1/">
+
+  
+
+  <link rel="stylesheet" href="http://ethanrosenthal.com/styles/main.css" type="text/css">
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.css" integrity="sha384-D+9gmBxUQogRLqvARvNLmA9hS2x//eK1FhVb9PiU86gmcrBrJAQT8okdJ4LMp2uv" crossorigin="anonymous">
+  
+
+  
+    <link href="http://ethanrosenthal.comcss/dataframe.css" rel="stylesheet" type="text/css">
+  
+
+  
+</head>
+
+  <body>
+    
+
+
+
+<nav class="row middle-xs center-xs">
+  <div class="col-xs-6 col-sm-1 logo">
+    <a href="http://ethanrosenthal.com#"><img src="http://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
+  </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#blog">Blog</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="https://physics.ethanrosenthal.com">Physics</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#about">About</a></h3>
+      </div>
+    
+  <div class="col-xs-6 col-sm-1 nav-toggle">
+      <a href="" class="nav-icon" onclick="return false"><img src="http://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="http://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
+  </div>
+</nav>
+
+<section class="nav-full row middle-xs center-xs">
+  <div class="col-xs-12">
+    <div class="row middle-xs center-xs">
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#blog">Blog</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="https://physics.ethanrosenthal.com">Physics</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#about">About</a></h1></div>
+      
+    </div>
+  </div>
+</section>
+
+    <main>
+
+      <section class="container">
+          <section class="content">
+              <h1> Time Series for scikit-learn People (Part I): Where&#39;s the X Matrix? </h1>
+
+              <div class="sub-header">
+                  January 28, 2018 · 13 minute read
+              </div>
+
+              <article class="entry-content">
+                  
+
+<div class="jupyter-cell markdown">
+
+
+<!-- PELICAN_BEGIN_SUMMARY -->
+
+<p>When I first started to learn about machine learning, specifically supervised learning, I eventually felt comfortable with taking some input $\mathbf{X}$, and determining a function $f(\mathbf{X})$ that best maps $\mathbf{X}$ to some known output value $y$. Separately, I dove a little into time series analysis and thought of this as a completely different paradigm. In time series, we don&rsquo;t think of things in terms of features or inputs; rather, we have the time series $y$, and $y$ alone, and we look at previous values of $y$ to predict future values of $y$.</p>
+
+<!-- PELICAN_END_SUMMARY -->
+
+<p>Still, I often wondered, &ldquo;Where does machine learning end and time series begin?&rdquo;. Or, &ldquo;How do I use &ldquo;features&rdquo; in time series?&ldquo;. I guess if you can answer these questions really well, then you&rsquo;re in for making some money in finance. Or not. I have no idea - I really know nothing about that world.</p>
+
+<p>I have had trouble answering these questions, in no small part due to the common difficulty of dealing with domain-specific vocabulary. I find myself having to internally translate time series concepts into &ldquo;familiar&rdquo; machine learning concepts. With this in mind, I would thus like to kick off a series of blog posts around analyzing time series data with the hopes of presenting these concepts in a familiar form. Due to the ubiquity of <a href="http://scikit-learn.org/stable/">scikit-learn</a>, I&rsquo;ll assume that the scikit-learn API constitutes a familiar form.</p>
+
+<p>To start the series off, in this post I&rsquo;ll introduce a time series dataset that I&rsquo;ve gathered. I&rsquo;ll then walk through how we can turn the time series forecasting problem into a classic linear regression problem.</p>
+
+<h2 id="let-s-find-a-y-t">Let&rsquo;s find a y(t)</h2>
+
+<p>The requirements for a suitable time series dataset are fairly minimal: We need some quantity that changes with time. Ideally, our data set could exhibit some patterns such that we can learn some things like seasonality and cyclic behavior. Thankfully, I&rsquo;ve got just the dataset!</p>
+
+<p>This is where you groan because I say that the dataset is related to the <a href="https://www.citibikenyc.com/system-data">Citi Bike NYC bikeshare data</a>. <em>Everybody</em> writes about this damn dataset, and it&rsquo;s been beaten to death. Well, I agree, but hear me out. I&rsquo;m not using the <em>same</em> dataset that everybody else uses. The typical Citi Bike dataset consists of all trips taken on the bikes. My dataset looks at the the number of bikes at each station as a function of time. Eh?</p>
+
+<p>I started collecting this data about a year and a half ago because I was dealing with a common, frustrating scenario. I would check the Citi Bike app to make sure that there would be docks available at the station by my office before I left my apartment in the morning. However, by the time I rode to the office station, all the docks would have filled up, and I&rsquo;d then have to go searching for a different station at which to dock the bike. Ideally, my app should tell me that, even though there are 5 docks available right now, they will likely be unavailable by the time I get there.</p>
+
+<p>I wanted to collect this data and predict this myself. I still haven&rsquo;t done that, but hopefully we will later on in this blog series. In the meantime, since 9/18/2016, I pinged the Citi Bike API every 2 minutes to collect how many bikes and docks are available at every single citi bike station in NYC. In the spirit of not planning ahead, this all just runs on a cron job on a t2.micro EC2 instance backed by a Postgres database that is running locally on the same instance. There are some gaps in the data due to me occasionally running out of hard drive space on the instance. The code for this lives in <a href="https://github.com/EthanRosenthal/bike-listener">this</a> repo, and I&rsquo;ve stored more than 200 million records.</p>
+
+<p>For more information about this dataset, I wrote a brief post on <a href="https://making.dia.com/reducing-new-office-anxiety-with-a-new-citi-bike-dataset-fb469fd6f5b6">Making Dia</a>.</p>
+
+<p>For our purposes today, I am going to focus on a single time series from this data. The time series consists of the number of available bikes at the station at East 16th St and 5th Ave (i.e. the closest one to my apartment) as a function of time. Specifically, time is indexed by the <code>last_communication_time</code>. The Citi Bike API seems to update its values with random periodicity for different stations. The <code>last_communication_time</code> corresponds to the last time that the Citi Bike API talked to the station at the time of me querying.</p>
+
+<p>We&rsquo;ll start by reading the data in with pandas. Pandas is probably the preferred library to use for exploring time series data in Python. It was originally built for analyzing financial data which is why it shines so well for time series. For an excellent resource on time series modeling in pandas, check out Tom Aguspurger&rsquo;s <a href="https://tomaugspurger.github.io/modern-7-timeseries">post</a> in his Modern Pandas series. While I found that post to be extremely helpful, I am more interested in <em>why</em> one does certain things with time series as opposed to <em>how</em> to do these things.</p>
+
+<p>My bike availability time series is in the form of a pandas <code>Series</code> object and is stored as a pickle file. Often, one does not care about the order of the index in Pandas objects, but, for time series, you will want to sort the values in chronological order. Note that I make sure the index is a sorted pandas <code>DatetimeIndex</code>.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">%config InlineBackend.figure_format = 'retina'
+
+import datetime
+import time
+
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+plt.ion()
+
+mpl.rcParams['axes.labelsize'] = 20
+mpl.rcParams['axes.titlesize'] = 24
+mpl.rcParams['figure.figsize'] = (8, 4)
+mpl.rcParams['xtick.labelsize'] = 14
+mpl.rcParams['ytick.labelsize'] = 14
+mpl.rcParams['legend.fontsize'] = 14
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python"># Load and sort the dataframe.
+
+df = pd.read_pickle('home_dat_20160918_20170604.pkl')
+df.set_index('last_communication_time', inplace=True)
+df.index = pd.to_datetime(df.index)
+df.sort_index(inplace=True)
+df.head()
+</code></pre>
+
+</div>
+
+
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>execution_time</th>
+      <th>available_bikes</th>
+      <th>available_docks</th>
+      <th>id</th>
+      <th>lat</th>
+      <th>lon</th>
+      <th>st_address</th>
+      <th>station_name</th>
+      <th>status_key</th>
+      <th>status_value</th>
+      <th>test_station</th>
+      <th>total_docks</th>
+    </tr>
+    <tr>
+      <th>last_communication_time</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2016-09-18 16:58:36</th>
+      <td>2016-09-18 16:59:51</td>
+      <td>4</td>
+      <td>43</td>
+      <td>496</td>
+      <td>40.737262</td>
+      <td>-73.99239</td>
+      <td>E 16 St &amp; 5 Ave</td>
+      <td>E 16 St &amp; 5 Ave</td>
+      <td>1</td>
+      <td>In Service</td>
+      <td>f</td>
+      <td>47</td>
+    </tr>
+    <tr>
+      <th>2016-09-18 16:58:36</th>
+      <td>2016-09-18 17:01:47</td>
+      <td>4</td>
+      <td>43</td>
+      <td>496</td>
+      <td>40.737262</td>
+      <td>-73.99239</td>
+      <td>E 16 St &amp; 5 Ave</td>
+      <td>E 16 St &amp; 5 Ave</td>
+      <td>1</td>
+      <td>In Service</td>
+      <td>f</td>
+      <td>47</td>
+    </tr>
+    <tr>
+      <th>2016-09-18 17:02:29</th>
+      <td>2016-09-18 17:03:42</td>
+      <td>7</td>
+      <td>40</td>
+      <td>496</td>
+      <td>40.737262</td>
+      <td>-73.99239</td>
+      <td>E 16 St &amp; 5 Ave</td>
+      <td>E 16 St &amp; 5 Ave</td>
+      <td>1</td>
+      <td>In Service</td>
+      <td>f</td>
+      <td>47</td>
+    </tr>
+    <tr>
+      <th>2016-09-18 17:02:29</th>
+      <td>2016-09-18 17:05:48</td>
+      <td>7</td>
+      <td>40</td>
+      <td>496</td>
+      <td>40.737262</td>
+      <td>-73.99239</td>
+      <td>E 16 St &amp; 5 Ave</td>
+      <td>E 16 St &amp; 5 Ave</td>
+      <td>1</td>
+      <td>In Service</td>
+      <td>f</td>
+      <td>47</td>
+    </tr>
+    <tr>
+      <th>2016-09-18 17:07:06</th>
+      <td>2016-09-18 17:07:44</td>
+      <td>7</td>
+      <td>40</td>
+      <td>496</td>
+      <td>40.737262</td>
+      <td>-73.99239</td>
+      <td>E 16 St &amp; 5 Ave</td>
+      <td>E 16 St &amp; 5 Ave</td>
+      <td>1</td>
+      <td>In Service</td>
+      <td>f</td>
+      <td>47</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python"># Pick out our time series object
+# and fix it to a 5-min sampling period
+
+y = df.available_bikes
+y.index.name = 'time'
+y = y.resample('5T').last()
+y.head()
+</code></pre>
+
+</div>
+
+
+<pre><code>time
+2016-09-18 16:55:00     4.0
+2016-09-18 17:00:00     7.0
+2016-09-18 17:05:00     6.0
+2016-09-18 17:10:00     5.0
+2016-09-18 17:15:00    10.0
+Freq: 5T, Name: available_bikes, dtype: float64
+</code></pre>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">ax = y.plot();
+ax.set_ylabel('# Bikes');
+</code></pre>
+
+</div>
+
+
+
+
+
+<figure>
+    
+        <img src="http://ethanrosenthal.com/2018/01/28/time-series-for-scikit-learn-people-part1/./index_4_0.png"/> </figure>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>As you can see, our time series looks like kind of a mess. We can zoom in on the first half of May to get a better view of what&rsquo;s going on. It looks like we have a regular rise and fall of our available bikes that happens each day with somewhat different behavior on the weekends (<sup>5</sup>&frasl;<sub>1</sub> was a Monday, and <sup>5</sup>&frasl;<sub>6</sub> was a Saturday, in case you&rsquo;re wondering).</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">y.loc['2017-05-01':'2017-05-15'].plot();
+plt.ylabel('# Bikes');
+</code></pre>
+
+</div>
+
+
+
+
+
+<figure>
+    
+        <img src="http://ethanrosenthal.com/2018/01/28/time-series-for-scikit-learn-people-part1/./index_6_0.png"/> </figure>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>If we zoom in on a single day, we see that the number of bikes at the station rises in the morning, around 9 AM, and then plummets in the evening, around 6 PM. I&rsquo;d call this a &ldquo;commuter&rdquo; station. There are a lot of offices around this station, so many people ride to the station in the morning, drop a bike off, and then pick up a bike in the evening and ride away. This works out perfectly for me, as I get to take the reverse commute.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">y.loc['2017-05-02 00:00:00':'2017-05-03 00:00:00'].plot();
+plt.ylabel('# Bikes');
+</code></pre>
+
+</div>
+
+
+
+
+
+<figure>
+    
+        <img src="http://ethanrosenthal.com/2018/01/28/time-series-for-scikit-learn-people-part1/./index_8_0.png"/> </figure>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<h1 id="input-output-input-output">&lt;&gt; Input &lt;&gt; Output &lt;&gt; Input &lt;&gt; Output &lt;&gt;</h1>
+
+<p>Excellent, we have our time series. What now? Let&rsquo;s think about what we actually want to do with it. To keep things simple, let&rsquo;s say that we want to be able to predict the next value in the time series. As an example, if it was noon (i.e. 12:00 PM) on May 2nd, we would be trying to predict the number of bikes available at 12:05 PM, since our time series is in periods of 5 minutes. Visually, this looks like the following:</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">known = y.loc['2017-05-02 11:00:00':'2017-05-02 12:00:00']
+unknown = y.loc['2017-05-02 12:00:00':'2017-05-02 12:30:00']
+to_predict = y.loc['2017-05-02 12:05:00':'2017-05-02 12:06:00']
+
+fig, ax = plt.subplots();
+known.plot(ax=ax, c='c', marker='o', zorder=3);
+unknown.plot(ax=ax, c='grey', alpha=0.5);
+to_predict.plot(ax=ax, c='r', marker='o', markersize=16,
+                linestyle='');
+
+ax.legend(['known', 'future', 'value to predict']);
+ax.set_ylabel('# bikes');
+</code></pre>
+
+</div>
+
+
+
+
+
+<figure>
+    
+        <img src="http://ethanrosenthal.com/2018/01/28/time-series-for-scikit-learn-people-part1/./index_10_0.png"/> </figure>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>Now that we have framed our problem in terms of what we <em>know</em> and what we want to predict, we walk back from whence we came towards ol&rsquo; machine learning. In time series, instead of creating a bunch of features to input into our model, we instead use the historical, known values of our time series as &ldquo;features&rdquo; to input into a model. The future value of the time series that we want to predict is then our target label. Mathematically, we will think of $\textbf{X}$ as our &ldquo;feature matrix&rdquo; or &ldquo;design matrix&rdquo; from machine learning. We would like to approximate $y$ with $\hat{y}$, and we&rsquo;ll learn a function $\hat{y} = f(\textbf{X})$ in order to do this. Our $\textbf{X}$ matrix consists of previous values of $y$, our time series. Thus, at some point in time $t$,</p>
+
+<p>$$\mathbf{X}_{t} = \mathbf{y}_{t^{\prime}\lt t}$$</p>
+
+<p>where I have somewhat abused notation via the following</p>
+
+<p>$$\mathbf{y}_{t^{\prime}\lt t} \equiv \big(y_{1}, y_{2}, \ldots, y_{t-2}, y_{t-1} \big)$$</p>
+
+<p>where the portion on the right denotes a vector. Consequently, if we want to predict $y$ at time $t$, then it will be</p>
+
+<p>$$\hat{y}_{t} = f(\mathbf{X}_{t})$$
+$$\hat{y}_{t} = f(\mathbf{y}_{t^{\prime}\lt t-1})$$</p>
+
+<p>Note that we cannot use future values to also predict the future. This is why we have to use the $t-1$ value of $\textbf{X}$ to predict $y_{t}$. In our graph from above, $t$ is 12:05 PM, the time that we are trying to predict. $\textbf{X}_{t-1}$ is the &ldquo;known&rdquo; cyan curve, and $y_{t}$ is the &ldquo;value to predict&rdquo; red marker.</p>
+
+<h1 id="building-the-x-matrix">Building the X matrix</h1>
+
+<p>Now that we&rsquo;re able to think of time series in the comfortable form of $\hat{y} = f(\mathbf{X})$, how do we build up the full design matrix $\textbf{X}$? We would like to think of things in the scikit-learn paradigm, where we want to fit a design matrix $\textbf{X}$ in which each column is a feature dimension and each row is a separate &ldquo;sample&rdquo; or &ldquo;data point&rdquo;. In our case, each column of $\textbf{X}$ will map to a previous value of $y$. We then have to think of how to build multiple samples.</p>
+
+<p>Before we build samples, though, let&rsquo;s introduce the concept of a <em>window</em>. Recall that $\mathbf{X}_{t} = \mathbf{y}_{t^{\prime}\lt t}$. We <em>could</em> use all values of $y$ up until time $t$, but this would quickly get unwieldy for large time series. Instead, we can consider some finite number of $y$ values preceding $t$. This finite range is our window. For a window size $w$, $\mathbf{X}_{t} = \big(y_{t-w}, y_{t-w+1},\ldots, y_{t-2}, y_{t-1} \big)$.</p>
+
+<p>We can now build up our data samples. We will chop our time series into a bunch of samples where each $\mathbf{X}_{t}$ is a length $w$ vector, and our targets are $y_{t}$. We&rsquo;ll again do this graphically. We take a window size of 5, and create 8 data points near noon on May 2nd. Each line plotted corresponds to a different row in our $\mathbf{X}$ matrix, and the lines are vertically offset for clarity.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">fig, ax = plt.subplots();
+
+start = np.where(y.index == '2017-05-02 11:00:00')[0][0]
+middle = np.where(y.index == '2017-05-02 12:15:00')[0][0]
+end = np.where(y.index == '2017-05-02 12:30:00')[0][0]
+
+window = 5
+
+for i in range(8):
+    
+    full = y.iloc[start:end]
+    train = y.iloc[middle - i - window:middle - i ]
+    predict = y.iloc[middle - i:middle - i + 1]   
+    
+    (full + 2*i).plot(ax=ax, c='grey', alpha=0.5);
+    (train + 2*i).plot(ax=ax, c='c', markersize=4,
+                       marker='o')
+    (predict + 2*i).plot(ax=ax, c='r', markersize=8, 
+                         marker='o', linestyle='')
+
+    
+ax.get_yaxis().set_ticks([]);
+ax.legend(['full time series', 
+           '$\mathbf{X}$', 
+           '$y$'],
+          bbox_to_anchor=(1, 1));
+</code></pre>
+
+</div>
+
+
+
+
+
+<figure>
+    
+        <img src="http://ethanrosenthal.com/2018/01/28/time-series-for-scikit-learn-people-part1/./index_12_0.png"/> </figure>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<h1 id="just-when-i-thought-i-was-out-linear-regression-pulls-me-back-in-https-www-youtube-com-watch-v-g29dxfcdhbg"><a href="https://www.youtube.com/watch?v=G29DXfcdhBg">Just when I thought I was out, linear regression pulls me back in</a></h1>
+
+<p>We are now capable of building up a dataset in an analogous format to how we conventionally think about machine learning problems. Let&rsquo;s say that we come up with some simple, linear model. We would like to learn some &ldquo;feature weights&rdquo; $\mathbf{a}$, such that</p>
+
+<p>$$\mathbf{X}\mathbf{a} = \hat{\mathbf{y}}$$</p>
+
+<p>Recall the shape of $\mathbf{X}$. We have a row for each data sample that we have created. For a time series of length $t$, and a window size of $w$, then we will have $t - w$ rows. The number of columns in $\textbf{X}$ is $w$. Consequently, $\textbf{a}$ will be a length-$w$ column vector. Putting it all together in matrix form looks like</p>
+
+<p>$$
+\begin{bmatrix}
+    y_{0} &amp; y_{1} &amp; y_{2} &amp; \dots  &amp; y_{w - 1} \cr
+    y_{1} &amp; y_{2} &amp; y_{3} &amp; \dots  &amp; y_{w} \cr
+    \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \cr
+    y_{t - 2 - w} &amp; y_{t - 1 - w} &amp; y_{t - w} &amp; \dots  &amp; y_{t - 2} \cr
+    y_{t - 1 - w} &amp; y_{t - w} &amp; y_{t - w + 1} &amp; \dots  &amp; y_{t - 1} \cr
+\end{bmatrix} \begin{bmatrix}
+    a_{0} \cr
+    a_{1} \cr
+    \vdots \cr
+    a_{w-2} \cr
+    a_{w-1}
+\end{bmatrix} = \begin{bmatrix}
+    \hat{y}_{w} \cr
+    \hat{y}_{w + 1} \cr
+    \vdots \cr
+    \hat{y}_{t - 1} \cr
+    \hat{y}_{t}
+\end{bmatrix}$$</p>
+
+<p>How could we learn these feature weights $\textbf{a}$? Ordinary Linear Regression shall do just fine. This means that our loss function looks like</p>
+
+<p>$$\frac{1}{t-w}\sum\limits_{i=w}^{i=t}\big(y_{i} - \hat{y}_{i}\big)^{2}$$</p>
+
+<p>We&rsquo;re then free to minimize however we want. We&rsquo;ll use <code>scikit-learn</code> for convenience:</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">#Build our matrices
+
+window = 5
+num_samples = 8
+X_mat = []
+y_mat = []
+for i in range(num_samples):
+    # Slice a window of features
+    X_mat.append(y.iloc[middle - i - window:middle - i].values)
+    y_mat.append(y.iloc[middle - i:middle - i + 1].values)
+
+X_mat = np.vstack(X_mat)
+y_mat = np.concatenate(y_mat)
+
+assert X_mat.shape == (num_samples, window)
+assert len(y_mat) == num_samples
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
+
+lr = LinearRegression(fit_intercept=False)
+lr = lr.fit(X_mat, y_mat)
+y_pred = lr.predict(X_mat)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">fig, ax = plt.subplots(figsize=(6, 6));
+
+ax.scatter(y_pred, y_mat);
+
+one_to_one = np.arange(y_mat.min()-2, y_mat.max()+2)
+ax.plot(one_to_one, one_to_one, c='r', linestyle='--');
+
+ax.set_xlim((one_to_one[0], one_to_one[-1]));
+ax.set_ylim((one_to_one[0], one_to_one[-1]));
+ax.set_xlabel('Predicted');
+ax.set_ylabel('True');
+ax.set_title(f'$R^{2}$ = {r2_score(y_mat, y_pred):3.2f}');
+</code></pre>
+
+</div>
+
+
+
+
+
+<figure>
+    
+        <img src="http://ethanrosenthal.com/2018/01/28/time-series-for-scikit-learn-people-part1/./index_16_0.png"/> </figure>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>Now you can ask yourself if what we&rsquo;ve done is okay, and the answer should probably be &ldquo;No&rdquo;. I&rsquo;m assuming most statisticians would be extremely uncomfortable right now. There&rsquo;s all sorts of issues, but, first and foremost, our data points are most assuredly not <a href="https://en.wikipedia.org/wiki/Independent_and_identically_distributed_random_variables">IID</a>. Most of the statistical issues with the above roll up into the concept that the data must be <a href="https://en.wikipedia.org/wiki/Stationary_process">stationary</a> before running a regression. Also, our time series consists of strictly integer values, and using continuous models seems suspect to me.</p>
+
+<p>Nevertheless, I&rsquo;m fine with what we did. The goal of the above was to show that it is <em>possible</em> to cast a time series problem into a familiar format.</p>
+
+<p>By the way, what we have done is defined and solved an <a href="https://en.wikipedia.org/wiki/Autoregressive_model">autoregressive model</a> which is the first two letters in the infamous <a href="https://en.wikipedia.org/wiki/Autoregressive_integrated_moving_average">ARIMA</a> family of models.</p>
+
+<p>Now that we&rsquo;ve seen how to turn a time series problem into a typical supervised learning problem, one can easily add features to the model as extra columns in the design matrix, $\mathbf{X}$. The tricky part about time series is that, because you&rsquo;re predicting the future, you must know what the future values of your features will be. For example, we could add in a binary feature indicating whether or not there is rain into our bike availablility forecaster. While this could potentially be useful for increasing accuracy on the training data, we would need to be able to accurately forecast the weather in order to forecast the time series far into the future, and we all know how hard weather forecasting is! In general, building training and test data for features that change with time is difficult, as it can be easy to leak information from the future into the past.</p>
+
+<p>Lastly, I would also like to point out that, while we chose to use Linear Regression as our model, we could have used any other type of model, such as a random forest or neural network.</p>
+
+<p>In the next post, I&rsquo;ll walk through how we can <em>correctly</em> build up a design matrix, and we&rsquo;ll take on the task of forecasting bike availability.</p>
+
+</div>
+
+
+              </article>
+
+              <div class="pagination">
+                  
+                      <a href="http://ethanrosenthal.com/2017/06/20/matrix-factorization-in-pytorch/">&laquo; Matrix Factorization in PyTorch</a>
+                  
+                  
+                      <a href="http://ethanrosenthal.com/2018/03/22/time-series-for-scikit-learn-people-part2/">Time Series for scikit-learn People (Part II): Autoregressive Forecasting Pipelines &raquo;</a>
+                  
+              </div>
+          </section>
+          <br>
+          <section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view comments powered by <a href="http://disqus.com/?ref_noscript">Disqus</a>.</noscript>
+</section>
+
+      </section>
+
+    </main>
+    <footer class="row middle-xs center-xs">
+
+  
+  
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://github.com/EthanRosenthal">GitHub</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://linkedin.com/in/ethanrosenthal">LinkedIn</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://twitter.com/eprosenthal">Twitter</a></div>
+  
+
+  
+    <div class="col-xs-12">
+      
+        Copyright &copy; 2018 ethan rosenthal.
+      
+      
+        <a href="https://tomanistor.com" target="_blank">Theme developed by Toma Nistor</a>
+      
+    </div>
+  
+
+</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.js" integrity="sha384-483A6DwYfKeDa0Q52fJmxFXkcPCFfnXMoXblOkJ4JcA8zATN6Tm78UNL72AKk+0O" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/contrib/auto-render.min.js" integrity="sha384-yACMu8JWxKzSp/C1YV86pzGiQ/l1YUfE8oPuahJQxzehAjEt2GiQuy/BIvl9KyeF" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function(){
+        	renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "\\\\begin{equation*}", right: "\\\\end{equation*}", display: true},
+                    {left: "$$", right: "$$", display: true},
+                    {left: "\\\[", right: "\\\]", display: true},
+                    {left: "$", right: "$", display: false},
+                    {left: "\\\(", right: "\\\)", display: false}
+                ]
+            });
+        });
+    </script>
+
+
+  <script src="http://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
+
+
+  </body>
+</html>

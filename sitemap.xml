@@ -8,6 +8,122 @@
     </url>
   
     <url>
+      <loc>http://ethanrosenthal.com/2018/08/06/serverless-integer-programming/</loc>
+      <lastmod>2018-08-06T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2018/03/22/time-series-for-scikit-learn-people-part2/</loc>
+      <lastmod>2018-03-22T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2018/01/28/time-series-for-scikit-learn-people-part1/</loc>
+      <lastmod>2018-01-28T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2017/06/20/matrix-factorization-in-pytorch/</loc>
+      <lastmod>2017-06-20T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2017/03/20/analytical-numerical-universal/</loc>
+      <lastmod>2017-03-20T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2017/02/05/rec-a-sketch/</loc>
+      <lastmod>2017-02-05T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2016/12/05/recasketch-keras/</loc>
+      <lastmod>2016-12-05T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2016/11/07/implicit-mf-part-2/</loc>
+      <lastmod>2016-11-07T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2016/10/19/implicit-mf-part-1/</loc>
+      <lastmod>2016-10-19T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2016/10/09/likes-out-guerilla-dataset/</loc>
+      <lastmod>2016-10-09T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2016/08/30/towards-optimal-personalization/</loc>
+      <lastmod>2016-08-30T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2016/07/20/lets-talk-or/</loc>
+      <lastmod>2016-07-20T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/</loc>
+      <lastmod>2016-01-09T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2015/11/02/intro-to-collaborative-filtering/</loc>
+      <lastmod>2015-11-02T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2015/10/06/interviews-to-job/</loc>
+      <lastmod>2015-10-06T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2015/09/29/insight-to-interviews/</loc>
+      <lastmod>2015-09-29T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2015/09/23/start-to-insight/</loc>
+      <lastmod>2015-09-23T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2014/11/25/festival-chatter-part4/</loc>
+      <lastmod>2014-11-25T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2014/10/06/festival-chatter-part3/</loc>
+      <lastmod>2014-10-06T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2014/09/09/festival-chatter-part2/</loc>
+      <lastmod>2014-09-09T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2014/08/31/festival-chatter-part1/</loc>
+      <lastmod>2014-08-31T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/2014/08/22/hello-world/</loc>
+      <lastmod>2014-08-22T00:00:00+00:00</lastmod>
+    </url>
+  
+    <url>
+      <loc>http://ethanrosenthal.com/blog/</loc>
+      <lastmod>2018-08-06T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+  
+    <url>
       <loc>http://ethanrosenthal.com/</loc>
       <lastmod>2018-09-04T23:38:57-04:00</lastmod>
       <priority>0</priority>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+  
+
+  <title>
+    
+    
+        Matrix Factorization in PyTorch | ethan rosenthal
+    
+  </title>
+
+  <meta name="title" content="Matrix Factorization in PyTorch | ethan rosenthal">
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta name="generator" content="">
+  <base href="http://ethanrosenthal.com">
+
+  
+    <meta name="description" content="Hey, remember when I wrote those ungodly long posts about matrix factorization chock-full of gory math? Good news! You can forget it all. We have now entered the Era of Deep Learning, and automatic differentiation shall be our guiding light.
+Less facetiously, I have finally spent some time checking out these new-fangled deep learning frameworks, and damn if I am not excited.
+In this post, I will show you how to use PyTorch to bypass the mess of code from my old post on Explicit Matrix Factorization and instead implement a model that will converge faster in fewer lines of code.">
+  
+
+  
+    <meta name="author" content="Ethan Rosenthal">
+  
+
+  
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@eprosenthal">
+    <meta name="twitter:creator" content="@eprosenthal">
+  
+
+  <meta property="og:title" content="Matrix Factorization in PyTorch | ethan rosenthal">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://ethanrosenthal.com">
+
+  
+    <meta property="og:image" content="http://ethanrosenthal.com/images/profile_pic2.jpg">
+  
+
+  
+    <meta name="og:description" content="Hey, remember when I wrote those ungodly long posts about matrix factorization chock-full of gory math? Good news! You can forget it all. We have now entered the Era of Deep Learning, and automatic differentiation shall be our guiding light.
+Less facetiously, I have finally spent some time checking out these new-fangled deep learning frameworks, and damn if I am not excited.
+In this post, I will show you how to use PyTorch to bypass the mess of code from my old post on Explicit Matrix Factorization and instead implement a model that will converge faster in fewer lines of code.">
+  
+
+  
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.ico">
+    <meta name="theme-color" content="#FFF">
+  
+
+  <link rel="canonical" href="http://ethanrosenthal.com/2017/06/20/matrix-factorization-in-pytorch/">
+
+  
+
+  <link rel="stylesheet" href="http://ethanrosenthal.com/styles/main.css" type="text/css">
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+
+  
+
+  
+    <link href="http://ethanrosenthal.comcss/dataframe.css" rel="stylesheet" type="text/css">
+  
+
+  
+</head>
+
+  <body>
+    
+
+
+
+<nav class="row middle-xs center-xs">
+  <div class="col-xs-6 col-sm-1 logo">
+    <a href="http://ethanrosenthal.com#"><img src="http://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
+  </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#blog">Blog</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="https://physics.ethanrosenthal.com">Physics</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#about">About</a></h3>
+      </div>
+    
+  <div class="col-xs-6 col-sm-1 nav-toggle">
+      <a href="" class="nav-icon" onclick="return false"><img src="http://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="http://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
+  </div>
+</nav>
+
+<section class="nav-full row middle-xs center-xs">
+  <div class="col-xs-12">
+    <div class="row middle-xs center-xs">
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#blog">Blog</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="https://physics.ethanrosenthal.com">Physics</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#about">About</a></h1></div>
+      
+    </div>
+  </div>
+</section>
+
+    <main>
+
+      <section class="container">
+          <section class="content">
+              <h1> Matrix Factorization in PyTorch </h1>
+
+              <div class="sub-header">
+                  June 20, 2017 · 8 minute read
+              </div>
+
+              <article class="entry-content">
+                  
+
+<div class="jupyter-cell markdown">
+
+
+<!-- PELICAN_BEGIN_SUMMARY -->
+
+<p>Hey, remember when I wrote those <a href="http://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/">ungodly</a> <a href="http://ethanrosenthal.com/2016/10/19/implicit-mf-part-1/">long</a> <a href="http://ethanrosenthal.com/2016/11/07/implicit-mf-part-2/">posts</a> about matrix factorization chock-full of gory math? Good news! You can forget it all. We have now entered the Era of Deep Learning, and automatic differentiation shall be our guiding light.</p>
+
+<!-- PELICAN_END_SUMMARY -->
+
+<p>Less facetiously, <em>I</em> have finally spent some time checking out these new-fangled deep learning frameworks, and damn if I am not excited.</p>
+
+<p>In this post, I will show you how to use <a href="http://pytorch.org/">PyTorch</a> to bypass the mess of code from my old post on Explicit Matrix Factorization and instead implement a model that will converge faster in fewer lines of code.</p>
+
+<p>But first, let&rsquo;s take a trip down memory lane.</p>
+
+<h2 id="the-dark-ages">The Dark Ages</h2>
+
+<p>If you recall from the original matrix factorization post, the key to the derivation was calculus. We defined a loss function which was the mean squared error (MSE) loss between the matrix factorization &ldquo;prediction&rdquo; and the actual user-item ratings. In order to minimize the loss function, we of course took the derivative and set it equal to zero.</p>
+
+<p>For the Stochastic Gradient Descent (SGD) derivation, we iterated through each sample in our dataset and took the derivative of the loss function with respect to each free &ldquo;variable&rdquo; in our model, which were the user and item latent feature vectors. We then used that derivative to smartly update the values for the latent feature vectors as we surfed down the loss function in search of a minima.</p>
+
+<p>I just described what we did in two paragraphs, but it took much longer to actually derive the correct gradient updates and code the whole thing up. The worst part was that, if we wanted to change anything about our prediction model, such as adding regularization or a user bias term, then we had re-derive all of the gradient updates by hand. And if we wanted to play with new techniques, like dropout? Oof, that sounds like a pain to derive!</p>
+
+<h2 id="the-enlightenment">The Enlightenment</h2>
+
+<p>The beauty of modern deep learning frameworks is that they utilize automatic differentiation. The phrase means exactly what it sounds like. You simply define your model for prediction, your loss function, and your optimization technique (Vanilla SGD, Adagrad, ADAM, etc&hellip;), and the computer will automatically calculate the gradient updates and optimize your model.</p>
+
+<p>Additionally, your models can often be easily parallelized across multiple CPU&rsquo;s or turbo-boosted on GPU&rsquo;s with little effort compared to, say, writing Cython code and parallelizing by hand.</p>
+
+<h2 id="minimum-viable-matrix-factorization">Minimum Viable Matrix Factorization</h2>
+
+<p>We&rsquo;ll walk through the three steps to building a prototype: defining the model, defining the loss, and picking an optimization technique. The latter two steps are largely built into PyTorch, so we&rsquo;ll start with the hardest first.</p>
+
+<h3 id="model">Model</h3>
+
+<p>All models in PyTorch subclass from <a href="http://pytorch.org/docs/nn.html#torch.nn.Module">torch.nn.Module</a>, and we will be no different. For our purposes, we only need to define our class and a <code>forward</code> method. The <code>forward</code> method will simply be our matrix factorization prediction which is the dot product between a user and item latent feature vector.</p>
+
+<p>In the language of neural networks, our user and item latent feature vectors are called <em>embedding</em> layers which are analogous to the typical two-dimensional matrices that make up the latent feature vectors. We&rsquo;ll define the embeddings when we initialize the class, and the <code>forward</code> method (the prediction) will involve picking out the correct rows of each of the embedding layers and then taking the dot product.</p>
+
+<p>Thankfully, many of the methods that you have come to know and love in numpy are also present in the PyTorch tensor library. When in doubt, I treat things like numpy and usually get 90% there.</p>
+
+<p>We&rsquo;ll also make up some fake ratings data for playing with in this post.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">import numpy as np
+from scipy.sparse import rand as sprand
+import torch
+from torch.autograd import Variable
+
+# Make up some random explicit feedback ratings
+# and convert to a numpy array
+n_users = 1000
+n_items = 1000
+ratings = sprand(n_users, n_items, 
+                 density=0.01, format='csr')
+ratings.data = (np.random.randint(1, 5, 
+                                  size=ratings.nnz)
+                          .astype(np.float64))
+ratings = ratings.toarray()
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">class MatrixFactorization(torch.nn.Module):
+    
+    def __init__(self, n_users, n_items, n_factors=20):
+        super().__init__()
+        self.user_factors = torch.nn.Embedding(n_users, 
+                                               n_factors,
+                                               sparse=True)
+        self.item_factors = torch.nn.Embedding(n_items, 
+                                               n_factors,
+                                               sparse=True)
+        
+    def forward(self, user, item):
+        return (self.user_factors(user) * self.item_factors(item)).sum(1)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">model = MatrixFactorization(n_users, n_items, n_factors=20)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<h3 id="loss">Loss</h3>
+
+<p>While PyTorch allows you to define custom loss functions, they thankfully have a default mean squared error loss function in the library.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">loss_func = torch.nn.MSELoss()
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<h3 id="optimization">Optimization</h3>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>There are a bunch of different optimization methods in PyTorch, but we&rsquo;ll stick with straight-up Stochastic Gradient Descent for today. One of the fun things about the library is that you are free to choose how to optimize each parameter of your model. Want to have different learning rates for different layers of your neural net? Go for it.</p>
+
+<p>We&rsquo;ll keep things simple, though, and use the same technique for all parameters in our model. This requires instantiating an optimization class and passing in the parameters which we want this object to optimize.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">optimizer = torch.optim.SGD(model.parameters(), 
+                            lr=1e-6) # learning rate
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<h3 id="train">Train</h3>
+
+<p>With the three steps complete, all that&rsquo;s left is to train the model! We have to convert our data into a <code>Variable</code> which will talk with the automatic differentiation library, <a href="http://pytorch.org/docs/autograd.html">autograd</a>. To convert the data into a <code>Variable</code>, it must first be cast to a torch <code>Tensor</code>. Explicitly casting variables is relatively rare in Python, which is probably why I run into the most issues at this stage.</p>
+
+<p>You must get your data into Python-native datatypes, <code>float</code> and <code>long</code>, and numpy likes to make this difficult. For example, you can try to cast a numpy array to <code>long</code> by calling <code>arr.long()</code>. This is a valid method but does not seem to actually cast the matrix.</p>
+
+<p>Nonetheless, below we shuffle our data and iterate through each sample. Each sample is converted to <code>Variable</code>, the loss is calculated, backpropagation is carried out to generate the gradients, and then the optimizer updates the parameters. And voilá! We have matrix factorization.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python"># Sort our data
+rows, cols = ratings.nonzero()
+p = np.random.permutation(len(rows))
+rows, cols = rows[p], cols[p]
+
+for row, col in zip(*(rows, cols)):
+    # Turn data into variables
+    rating = Variable(torch.FloatTensor([ratings[row, col]]))
+    row = Variable(torch.LongTensor([np.long(row)]))
+    col = Variable(torch.LongTensor([np.long(col)]))
+    
+    # Predict and calculate loss
+    prediction = model(row, col)
+    loss = loss_func(prediction, rating)
+    
+    # Backpropagate
+    loss.backward()
+    
+    # Update the parameters
+    optimizer.step()
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<h2 id="experimentation">Experimentation</h2>
+
+<p>The beauty of the above code is that we can rapidly experiment with different parts of our model and training. For example, adding user and item biases is quite simple via an embedding layer with one dimension:</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">class BiasedMatrixFactorization(torch.nn.Module):
+    
+    def __init__(self, n_users, n_items, n_factors=20):
+        super().__init__()
+        self.user_factors = torch.nn.Embedding(n_users, 
+                                               n_factors,
+                                               sparse=True)
+        self.item_factors = torch.nn.Embedding(n_items, 
+                                               n_factors,
+                                               sparse=True)
+        self.user_biases = torch.nn.Embedding(n_users, 
+                                              1,
+                                              sparse=True)
+        self.item_biases = torch.nn.Embedding(n_items,
+                                              1,
+                                              sparse=True)
+        
+    def forward(self, user, item):
+        pred = self.user_biases(user) + self.item_biases(item)
+        pred += (self.user_factors(user) * self.item_factors(item)).sum(1)
+        return pred
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>$L_{2}$ regularization can easily be added to the entire model via the optimizer:</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">reg_loss_func = torch.optim.SGD(model.parameters(), lr=1e-6,
+                                weight_decay=1e-5)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>And if you want to get smart about decaying your learning rate, try out a different optimization algorithm:</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">adagrad_loss = torch.optim.Adagrad(model.parameters(), lr=1e-6)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>But that&rsquo;s all just the tip of the iceberg. The real fun is when we stop thinking of recommendation systems as simply user-by-item matrices and incorporate all sorts of side information, context, temporal data, etc&hellip; and pass this all through novel network topologies without having to calculate everything by hand. Let me know if you do any of that :)</p>
+
+<h2 id="caveat">Caveat</h2>
+
+<p>To now throw a little water on this optimistic post, it&rsquo;s worth pointing out that there are some costs to abandoning bespoke recommendation systems in favor of repurposing deep learning frameworks. For one, <em>well-written</em> custom solutions are still much faster. Alternating Least Squares is an elegant and more efficient method than SGD for factorizing matrices, and packages like <a href="https://github.com/benfred/implicit">implicit</a> show this off with their blazingly fast speed.</p>
+
+<p>Support for sparse feature learning is still a bit spotty, too. For example, <a href="https://github.com/lyst/lightfm">LightFM</a> is built from the ground up with sparse features in mind and consequently operates much quicker than a similar solution in a deep learning framework.</p>
+
+<p>This post may (read: will) eventually date itself. As GPUs get larger and the frameworks support more sparse operations on the GPU, it may make sense to fully switch over to deep learning frameworks from bespoke CPU solutions.</p>
+
+<h2 id="further-exploration">Further Exploration</h2>
+
+<p>This post is just a brief introduction to implementing a recommendation system in PyTorch. There are many parts of the code that are poorly optimized. In particular, it is quite helpful to have a generator function/class for loading the data when training. Additionally, one can push computation to a GPU or train in parallel in a <a href="http://pytorch.org/docs/notes/multiprocessing.html">HOGWILD</a> manner.</p>
+
+<p>If you would like to see more, I have started to play around with some explicit and implicit feedback recommendation models Pytorch in a repo <a href="https://github.com/ethanrosenthal/torchmf">here</a>. Maciej Kula, the author of LightFM, also has a repo with recommendation models in Pytorch <a href="https://github.com/maciejkula/netrex">here</a> (<em>Update 11/12/2017: Maciej turned that repo into <a href="https://github.com/maciejkula/spotlight">Spotlight</a> which supports a wide range of recommendation models in PyTorch</em>).</p>
+
+<p>Lastly, why PyTorch for this post? I don&rsquo;t have a great reason other than that I have <em>really</em> enjoyed its general ease of use: it&rsquo;s super easy to install (even with GPU support), it integrates nicely with numpy, and the documentation is fairly extensive. It also feels like there is less noise out there when I am googling for help compared to more popular frameworks like Tensorflow. The downside is the library is a bit rough around the edges, and the API is rapidly changing.</p>
+
+</div>
+
+
+              </article>
+
+              <div class="pagination">
+                  
+                      <a href="http://ethanrosenthal.com/2017/03/20/analytical-numerical-universal/">&laquo; From Analytical to Numerical to Universal Solutions</a>
+                  
+                  
+                      <a href="http://ethanrosenthal.com/2018/01/28/time-series-for-scikit-learn-people-part1/">Time Series for scikit-learn People (Part I): Where&#39;s the X Matrix? &raquo;</a>
+                  
+              </div>
+          </section>
+          <br>
+          <section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view comments powered by <a href="http://disqus.com/?ref_noscript">Disqus</a>.</noscript>
+</section>
+
+      </section>
+
+    </main>
+    <footer class="row middle-xs center-xs">
+
+  
+  
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://github.com/EthanRosenthal">GitHub</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://linkedin.com/in/ethanrosenthal">LinkedIn</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://twitter.com/eprosenthal">Twitter</a></div>
+  
+
+  
+    <div class="col-xs-12">
+      
+        Copyright &copy; 2018 ethan rosenthal.
+      
+      
+        <a href="https://tomanistor.com" target="_blank">Theme developed by Toma Nistor</a>
+      
+    </div>
+  
+
+</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+  <script src="http://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
+
+
+  </body>
+</html>

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+  
+
+  <title>
+    
+    
+        Festival Chatter (Part 3) - Bonnaroo Analysis in the Fourth Dimension | ethan rosenthal
+    
+  </title>
+
+  <meta name="title" content="Festival Chatter (Part 3) - Bonnaroo Analysis in the Fourth Dimension | ethan rosenthal">
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta name="generator" content="">
+  <base href="http://ethanrosenthal.com">
+
+  
+    <meta name="description" content="In this series of posts (part 1, part 2), I have been showing how to use Python and other data scientist tools to analyze a collection of tweets related to the 2014 Bonnaroo Music and Arts Festival. So far, the investigation has been limited to summary data of the full dataset. The beauty of Twitter is that it occurs in realtime, so we can now peer into the fourth dimension and learn about these tweets as a function of time.">
+  
+
+  
+    <meta name="author" content="Ethan Rosenthal">
+  
+
+  
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@eprosenthal">
+    <meta name="twitter:creator" content="@eprosenthal">
+  
+
+  <meta property="og:title" content="Festival Chatter (Part 3) - Bonnaroo Analysis in the Fourth Dimension | ethan rosenthal">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://ethanrosenthal.com">
+
+  
+    <meta property="og:image" content="http://ethanrosenthal.com/images/profile_pic2.jpg">
+  
+
+  
+    <meta name="og:description" content="In this series of posts (part 1, part 2), I have been showing how to use Python and other data scientist tools to analyze a collection of tweets related to the 2014 Bonnaroo Music and Arts Festival. So far, the investigation has been limited to summary data of the full dataset. The beauty of Twitter is that it occurs in realtime, so we can now peer into the fourth dimension and learn about these tweets as a function of time.">
+  
+
+  
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.ico">
+    <meta name="theme-color" content="#FFF">
+  
+
+  <link rel="canonical" href="http://ethanrosenthal.com/2014/10/06/festival-chatter-part3/">
+
+  
+
+  <link rel="stylesheet" href="http://ethanrosenthal.com/styles/main.css" type="text/css">
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+
+  
+
+  
+
+  
+</head>
+
+  <body>
+    
+
+
+
+<nav class="row middle-xs center-xs">
+  <div class="col-xs-6 col-sm-1 logo">
+    <a href="http://ethanrosenthal.com#"><img src="http://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
+  </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#blog">Blog</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="https://physics.ethanrosenthal.com">Physics</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#about">About</a></h3>
+      </div>
+    
+  <div class="col-xs-6 col-sm-1 nav-toggle">
+      <a href="" class="nav-icon" onclick="return false"><img src="http://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="http://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
+  </div>
+</nav>
+
+<section class="nav-full row middle-xs center-xs">
+  <div class="col-xs-12">
+    <div class="row middle-xs center-xs">
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#blog">Blog</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="https://physics.ethanrosenthal.com">Physics</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#about">About</a></h1></div>
+      
+    </div>
+  </div>
+</section>
+
+    <main>
+
+      <section class="container">
+          <section class="content">
+              <h1> Festival Chatter (Part 3) - Bonnaroo Analysis in the Fourth Dimension </h1>
+
+              <div class="sub-header">
+                  October 6, 2014 · 9 minute read
+              </div>
+
+              <article class="entry-content">
+                  
+
+<p>In this series of posts (<a href="http://ethanrosenthal.com/2014/08/31/festival-chatter-part1/">part 1</a>, <a href="http://ethanrosenthal.com/2014/09/09/festival-chatter-part2/">part 2</a>), I have been showing how to use Python and other data scientist tools to analyze a collection of tweets related to the 2014 Bonnaroo Music and Arts Festival. So far, the investigation has been limited to summary data of the full dataset. The beauty of Twitter is that it occurs in realtime, so we can now peer into the fourth dimension and learn about these tweets as a function of time.</p>
+
+<h2 id="more-organic">More Organic</h2>
+
+<p>Before we view the Bonnaroo tweets as a time series, I would like to make a quick comment about the organic-ness of the tweets. If you recall from the previous <a href="http://ethanrosenthal.com/2014/09/09/festival-chatter-part2/">post</a>, I removed duplicates and retweets from my collection in order to make the tweet database more indicative of true audience reactions. On further investigation, it seems that there were many spammy media sources still in the collection. To make the tweets even more organic, I decided to look at the source of the tweets.</p>
+
+<p>Because Kanye West was the most popular artist from the previous posts&rsquo; analysis, I decided to look at the top 15 sources that mentioned him:</p>
+
+<pre><code>twitterfeed                    1585
+dlvr.it                         749
+Twitter for iPhone              366
+IFTTT                           256
+Hootsuite                       201
+Twitter for Websites            188
+Twitter Web Client              127
+Facebook                        120
+Twitter for Android             119
+WordPress.com                   102
+Tumblr                           81
+Instagram                        73
+iOS                              42
+TweetDeck                        38
+TweetAdder v4                    37
+</code></pre>
+
+<p>twitterfeed and dlvr.it are social media platforms for deploying mass tweets, and a look at some of these tweets reveals this fact. So, I decided to create a list of &ldquo;organic sources&rdquo;, which consists of mobile Twitter clients, and use these to cull the tweet collection</p>
+
+<pre><code class="language-python">organic_sources = ['Twitter for iPhone', 'Twitter Web Client',
+                    'Facebook', 'Twitter for Android', 'Instagram']
+organics = organics[organics['source'].isin(organic_sources)]
+</code></pre>
+
+<p>With this new dataset, I re-ran the band popularity histogram from the previous post, and I was surprised to see that Kanye got bumped down to third place! It looks like Kanye&rsquo;s popular with the media, but Jack White and Elton John were more popular with the Bonnaroo audience.</p>
+
+<p><img src="images/bandPop_top10_orig_sources.png" alt="New Top Ten Bands" /></p>
+
+<h2 id="4th-dimensional-transition-http-youtu-be-5vwv6htrjvy">4th Dimensional <a href="http://youtu.be/5vwV6htrjVY">Transition</a></h2>
+
+<p>Let&rsquo;s now look at the time dependence of the tweets. For this, we would like to use the <code>created_at</code> field as our index and tell pandas to treat its elements as datetime objects.</p>
+
+<pre><code class="language-python"># Clean up field
+organics['created_at'] = [tweetTime['$date'] for tweetTime in organics['created_at']]
+
+organics['created_at'] = pd.to_datetime(Series(organics['created_at']))
+organics = organics.set_index('created_at',drop=False)
+organics.index = organics.index.tz_localize('UTC').tz_convert('EST')
+</code></pre>
+
+<p>To look at the number of tweets per hour, we have to resample our tweet collection.</p>
+
+<pre><code class="language-python">ts_hist = organics['created_at'].resample('60t', how='count')
+</code></pre>
+
+<p>The majority of my time spent creating this blog post consisted of fighting with <em>matplotlib</em> trying to get decent looking plots. I thought it would be cool to try to make a &ldquo;<a href="http://matplotlib.org/users/recipes.html">fill between</a>&rdquo; plot, which took way longer to figure out than it should have. The key is that <code>fill_between</code> takes 3 inputs: an array for the x-axis and two y-axis arrays between which the function fills color. If one just wants to plot a regular curve and fill to the x-axis, one must create an array of zeros that is the same length as the curve. Also, I get pretty confused with which commands should be called with ax, plt, and fig. Anyway, the code and corresponding figure are below.</p>
+
+<pre><code class="language-python"> # Prettier pandas plot settings
+ # Not sure why 'default' is not the default...
+pd.options.display.mpl_style='default'
+x_date = tshist.index
+zero_line = np.zeros(len(x_date))
+
+fig, ax = plt.subplots()
+ax.fill_between(x_date, zero_line, ts_hist.values, facecolor='blue', alpha=0.5)
+# Format plot
+plt.setp(ax.get_xticklabels(),fontsize=12,family='sans-serif')
+plt.setp(ax.get_yticklabels(),fontsize=12,family='sans-serif')
+plt.xlabel('Date',fontsize=30)
+plt.ylabel('Counts',fontsize=30)
+
+plt.show()
+</code></pre>
+
+<p><img src="images/tweet_count_ts.png" alt="Tweets per Hour" /></p>
+
+<p>As you can see, tweet frequency was pretty consistent during each day of the festival and persisted until the early hours of each morning.</p>
+
+<h2 id="band-popularity-time-series">Band Popularity Time Series</h2>
+
+<p>We can now go back to questions from the previous post and look at how the top five bands&rsquo; popularity changed with time. Using my program from the previous post, <code>buildMentionHist</code>, we can add a column for each band to our existing <code>organics</code> dataframe. Each row of the bands&rsquo; columns will contain a True or False value corresponding to whether or not the artist was mentioned in the tweet. We resample the columns like above but do this in bins of 10 minutes.</p>
+
+<pre><code class="language-python">import buildMentionHist as bmh
+import json
+
+path = 'bonnaroooAliasList.json'
+alias_dict = [json.loads(line) for line in open(path)][0]
+bandPop = organics['text'].apply(bmh.build_apply_fun(alias_dict),
+                                 alias_dict)
+top_five = bandPop.index.tolist()[:5] # Get top five artists' names
+bandPop = pd.concat([organics, bandPop], axis=1)
+
+top_five_ts = DataFrame()
+for band in top_five:
+    top_five_ts[band] = bandPop[bandPop[band] == True]['text'].resample('10min', how='count')
+
+</code></pre>
+
+<p>We now have a dataframe called <code>top_five_ts</code> that contains the time series information for the top five most popular bands at Bonnaroo. All we have to do now is plot these time series. I wanted to again make some fill between plots but with different colors for each band. I used the <a href="http://olgabot.github.io/prettyplotlib/">prettyplotlib</a> library to help with this because it has nicer looking default colors. I plot both the full time series and a &ldquo;zoomed-in&rdquo; time series that is closer to when the artists&rsquo; popularities peaked on Twitter. I ran into a lot of trouble trying to get the dates and times formatted correctly on the x-axis of the zoomed-in plot, so I have included that code below. There is probably a better way to do it, but at least this finally worked.</p>
+
+<pre><code class="language-python">import pytz
+import prettyplotlib as ppl
+from prettyplotlib import brewer2mpl
+
+for band in top_five_ts:
+    ppl.fill_between(top_five_ts.index.tolist(),0.,top_five_ts[band])
+
+ax = plt.gca()
+fig = plt.gcf()
+set2 = brewer2mpl.get_map('Set2','qualitative',8).mpl_colors
+
+# Note: have to make legend by hand for fill_between plots.
+# BEGIN making legend
+for color in set2:
+    legendProxies.append(plt.Rectangle((0, 0), 1, 1, fc=color))
+
+leg = legend(legendProxies, topfive, loc=2)
+leg.draw_frame(False)
+# END making legend
+
+
+# BEGIN formatting xaxis
+datemin = datetime(2014,6,13,12,0,0)
+datemax = datetime(2014,6,16,12,0,0)
+est = pytz.timezone('EST')
+plt.axis([est.localize(datemin), est.localize(datemax),  0, 80])
+fmt = dates.DateFormatter('%m/%d %H:%M',tz=est)
+ax.xaxis.set_major_formatter(fmt)
+ax.xaxis.set_tick_params(direction='out')
+# END formatting xaxis
+
+plt.xlabel('Date',fontsize=30)
+plt.ylabel('Counts',fontsize=30)
+</code></pre>
+
+<p>Here is the full time series:</p>
+
+<p><img src="images/topfive_tweet_ts.png" alt="Top Five TS Popularity" /></p>
+
+<p>And here is the zoomed-in time series:</p>
+
+<p><img src="images/topfive_tweet_ts_zoom.png" alt="Top Five TS Popularity Zoom" /></p>
+
+<p>If we look at when each band went on stage, we can see that each bands&rsquo; popularity spiked while they were performing. This is good - it looks like we are measuring truly &ldquo;organic&rdquo; interest on Twitter!</p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Band</strong></th>
+<th><strong>Performance Time</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Jack White</td>
+<td><sup>6</sup>&frasl;<sub>14</sub> 10:45PM - 12:15AM</td>
+</tr>
+
+<tr>
+<td>Elton John</td>
+<td><sup>6</sup>&frasl;<sub>15</sub> 9:30PM - 11:30PM</td>
+</tr>
+
+<tr>
+<td>Kanye West</td>
+<td><sup>6</sup>&frasl;<sub>13</sub> 10:00PM - 12:00AM</td>
+</tr>
+
+<tr>
+<td>Skrillex</td>
+<td><sup>6</sup>&frasl;<sub>14</sub> 1:30AM - 3:30AM</td>
+</tr>
+
+<tr>
+<td>Vampire Weekend</td>
+<td><sup>6</sup>&frasl;<sub>13</sub> 7:30PM - 8:45PM</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="delving-into-the-text">Delving into the Text</h2>
+
+<p>Up until now, I have not looked too much about the actual text of the tweets other than to find a mention of an artist. Using the <em>nltk</em> library, we can learn a little more about some general qualities of the text. The simplest quantity is looking at the most frequently used words. To do this, I go through every tweet and break all of the words up into individual elements of a list. In the language of natural language processing, we are &ldquo;tokenizing&rdquo; the text. Common english stopwords are omitted, as well as any mentions of the artists or artists&rsquo; aliases. I use a regular expression code to only grab words from the sentences and ignore punctuation (except for apostrophes). I also take our <code>alias_dict</code> from the previous post and make sure that those words are not collected when tokenizing the tweets.</p>
+
+<pre><code class="language-python">from nltk.tokenize import RegexpTokenizer
+from nltk.corpus import stopwords
+import re
+
+def custom_tokenize(text, custom_words=None, clean_custom_words=False):
+    &quot;&quot;&quot;
+    This routine takes an input &quot;text&quot; and strips punctuation
+    (except apostrophes), converts each words to lowercase,
+    removes standard english stopwords, removes a set of
+    custom_words (optional), and returns a list of all of the
+    leftover words.
+
+    INPUTS:
+    text = text string that one wants to tokenize
+    custom_words = custom list or dictionary of words to omit
+                    from the tokenization.
+    clean_custom_world = Flag as True if you want to clean
+                            these words.
+                         Flag as False if mapping this function
+                            to many keys. In that case,
+                            pre-clean the words before running
+                            this function.
+    OUTPUTS:
+    words = This is a list of the tokenized version of each word
+            that was in &quot;text&quot;
+    &quot;&quot;&quot;
+    tokenizer = RegexpTokenizer(r&quot;[\w']+&quot;)
+    stop_url = re.compile(r'http[^\\s]+')
+    stops = stopwords.words('english')
+
+    if clean_custom_words:
+        custom_words = tokenize_custom_words(custom_words)
+
+    words = [w.lower() for w in text.split() if not re.match(stop_url, w)]
+    words = tokenizer.tokenize(' '.join(words))
+    words = [w for w in words if w not in stops and w not in custom_words]
+
+    return words
+
+def tokenize_custom_words(custom_words):
+    tokenizer = RegexpTokenizer(r&quot;[\w']+&quot;)
+    custom_tokens = []
+    stops = stopwords.words('english')
+
+    if type(custom_words) is dict: # Useful for alias_dict
+        for k, v in custom_words.iteritems():
+            k_tokens = [w.lower() for w in k.split() if w.lower() not in stops]
+            # Remove all punctuation
+            k_tokens = tokenizer.tokenize(' '.join(k_tokens))
+            # Remove apostrophes
+            k_tokens = [w.replace(&quot;'&quot;,&quot;&quot;) for w in k_tokens]
+            # Below takes care of nested lists, then tokenizes
+            v_tokens = [word for listwords in v for word in listwords]
+            v_tokens = tokenizer.tokenize(' '.join(v_tokens))
+            # Remove apostrophes
+            v_tokens = [w.replace(&quot;'&quot;,&quot;&quot;) for w in v_tokens]
+            custom_tokens.extend(k_tokens)
+            custom_tokens.extend(v_tokens)
+    elif type(custom_words) is list:
+        custom_tokens = [tokenizer.tokenize(words) for words in custom_words]
+        custom_tokens = [words.replace(&quot;'&quot;,&quot;&quot;) for words in custom_tokens]
+
+    custom_tokens = set(custom_tokens)
+    return custom_tokens
+
+</code></pre>
+
+<p>Using the above code, I can apply the <code>custom_tokenize</code> function to each row of my <code>organics</code> dataframe. Before doing this, though, I make sure to run the <code>tokenize_custom_words</code> function on the alias dictionary. Otherwise, I would end up cleaning the aliases for every row in the dataframe which is a waste of time.</p>
+
+<pre><code class="language-python">import custom_tokenize as tk
+
+clean_aliases = tk.tokenize_custom_words(alias_dict)
+token_df = organics['text'].apply(tk.custom_tokenize,
+                                  custom_words=clean_aliases,
+                                  clean_custom_words=False)
+</code></pre>
+
+<p>Lastly, I collect all of the tokens into one giant list and use the <code>FreqDist</code> <em>nltk</em> function to get the word frequency distribution.</p>
+
+<pre><code class="language-python"># Need to flatten all tokens into one big list:
+big_tokens = [y for x in token_df.values for y in x]
+distr = nltk.FreqDist(big_tokens)
+distr = distr.pop('bonnaroo') # Obviously highest frequency
+distr.plot(25)
+</code></pre>
+
+<p><img src="images/token_freq.png" alt="Word Frequency Distribution" /></p>
+
+<p>A couple things caught my eye - the first being that people like to talk about themseleves (see popularity of &ldquo; i&rsquo;m &ldquo;). Also it was pretty popular to misspell &ldquo;Bonnaroo&rdquo; (see popularity of &ldquo; bonaroo &ldquo;). I wanted to see if there was any correlation between mispellings and maybe people being intoxicated at night, but the time series behavior of the mispellings looks similar in shape (though not magnitude) to the full tweet time series that is plotted earlier in the post.</p>
+
+<pre><code class="language-python">misspell = token_df.apply(lambda x: 'bonaroo' in x)
+misspell = misspell[misspell].resample('60t', how='count')
+</code></pre>
+
+<p><img src="images/misspell_bonaroo_ts.png" alt="Misspelling Time Series" /></p>
+
+<p>The other thing that interested me was the the word &ldquo;best&rdquo; was one of the top 25 most frequent words. Assuming that &ldquo;best&rdquo; correlates with happiness, we can see that people got happier and happier as the festival progressed:</p>
+
+<p><img src="images/best_ts.png" alt="&quot;Best&quot; Time Series" /></p>
+
+<p>This is, of course, a fairly simplistic measure of text sentiment. In my next post, I would like to quantify more robust measures of Bonnaroo audience sentiment.</p>
+
+<p>By the way, the code used in this whole series on Bonnaroo is available on my <a href="https://github.com/EthanRosenthal/festival-chatter">GitHub</a>.</p>
+
+              </article>
+
+              <div class="pagination">
+                  
+                      <a href="http://ethanrosenthal.com/2014/09/09/festival-chatter-part2/">&laquo; Festival Chatter (Part 2) - Evaluating Band Popularity from Bonnaroo Tweets</a>
+                  
+                  
+                      <a href="http://ethanrosenthal.com/2014/11/25/festival-chatter-part4/">Festival Chatter (Part 4) - Some Simple Sentiment Analysis &raquo;</a>
+                  
+              </div>
+          </section>
+          <br>
+          <section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view comments powered by <a href="http://disqus.com/?ref_noscript">Disqus</a>.</noscript>
+</section>
+
+      </section>
+
+    </main>
+    <footer class="row middle-xs center-xs">
+
+  
+  
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://github.com/EthanRosenthal">GitHub</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://linkedin.com/in/ethanrosenthal">LinkedIn</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://twitter.com/eprosenthal">Twitter</a></div>
+  
+
+  
+    <div class="col-xs-12">
+      
+        Copyright &copy; 2018 ethan rosenthal.
+      
+      
+        <a href="https://tomanistor.com" target="_blank">Theme developed by Toma Nistor</a>
+      
+    </div>
+  
+
+</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+  <script src="http://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
+
+
+  </body>
+</html>

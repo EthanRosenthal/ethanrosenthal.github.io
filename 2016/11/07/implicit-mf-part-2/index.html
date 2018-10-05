@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+  
+
+  <title>
+    
+    
+        Learning to Rank Sketchfab Models with LightFM | ethan rosenthal
+    
+  </title>
+
+  <meta name="title" content="Learning to Rank Sketchfab Models with LightFM | ethan rosenthal">
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta name="generator" content="">
+  <base href="http://ethanrosenthal.com">
+
+  
+    <meta name="description" content="In this post we&rsquo;re going to do a bunch of cool things following up on the last post introducing implicit matrix factorization. We&rsquo;re going to explore Learning to Rank, a different method for implicit matrix factorization, and then use the library LightFM to incorporate side information into our recommender. Next, we&rsquo;ll use scikit-optimize to be smarter than grid search for cross validating hyperparameters. Lastly, we&rsquo;ll see that we can move beyond simple user-to-item and item-to-item recommendations now that we have side information embedded in the same space as our users and items.">
+  
+
+  
+    <meta name="author" content="Ethan Rosenthal">
+  
+
+  
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@eprosenthal">
+    <meta name="twitter:creator" content="@eprosenthal">
+  
+
+  <meta property="og:title" content="Learning to Rank Sketchfab Models with LightFM | ethan rosenthal">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://ethanrosenthal.com">
+
+  
+    <meta property="og:image" content="http://ethanrosenthal.com/images/profile_pic2.jpg">
+  
+
+  
+    <meta name="og:description" content="In this post we&rsquo;re going to do a bunch of cool things following up on the last post introducing implicit matrix factorization. We&rsquo;re going to explore Learning to Rank, a different method for implicit matrix factorization, and then use the library LightFM to incorporate side information into our recommender. Next, we&rsquo;ll use scikit-optimize to be smarter than grid search for cross validating hyperparameters. Lastly, we&rsquo;ll see that we can move beyond simple user-to-item and item-to-item recommendations now that we have side information embedded in the same space as our users and items.">
+  
+
+  
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.ico">
+    <meta name="theme-color" content="#FFF">
+  
+
+  <link rel="canonical" href="http://ethanrosenthal.com/2016/11/07/implicit-mf-part-2/">
+
+  
+
+  <link rel="stylesheet" href="http://ethanrosenthal.com/styles/main.css" type="text/css">
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.css" integrity="sha384-D+9gmBxUQogRLqvARvNLmA9hS2x//eK1FhVb9PiU86gmcrBrJAQT8okdJ4LMp2uv" crossorigin="anonymous">
+  
+
+  
+    <link href="http://ethanrosenthal.comcss/dataframe.css" rel="stylesheet" type="text/css">
+  
+
+  
+</head>
+
+  <body>
+    
+
+
+
+<nav class="row middle-xs center-xs">
+  <div class="col-xs-6 col-sm-1 logo">
+    <a href="http://ethanrosenthal.com#"><img src="http://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
+  </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#blog">Blog</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="https://physics.ethanrosenthal.com">Physics</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#about">About</a></h3>
+      </div>
+    
+  <div class="col-xs-6 col-sm-1 nav-toggle">
+      <a href="" class="nav-icon" onclick="return false"><img src="http://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="http://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
+  </div>
+</nav>
+
+<section class="nav-full row middle-xs center-xs">
+  <div class="col-xs-12">
+    <div class="row middle-xs center-xs">
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#blog">Blog</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="https://physics.ethanrosenthal.com">Physics</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#about">About</a></h1></div>
+      
+    </div>
+  </div>
+</section>
+
+    <main>
+
+      <section class="container">
+          <section class="content">
+              <h1> Learning to Rank Sketchfab Models with LightFM </h1>
+
+              <div class="sub-header">
+                  November 7, 2016 · 21 minute read
+              </div>
+
+              <article class="entry-content">
+                  
+
+<div class="jupyter-cell markdown">
+
+
+<!-- PELICAN_BEGIN_SUMMARY -->
+
+<p>In this post we&rsquo;re going to do a bunch of cool things following up on the last <a href="{filename}/2016-10-19-implicit-mf-part-1.md">post</a> introducing implicit matrix factorization. We&rsquo;re going to explore Learning to Rank, a different method for implicit matrix factorization, and then use the library <a href="http://lyst.github.io/lightfm/docs/home.html">LightFM</a> to incorporate side information into our recommender. Next, we&rsquo;ll use <a href="https://scikit-optimize.github.io/">scikit-optimize</a> to be smarter than grid search for cross validating hyperparameters. Lastly, we&rsquo;ll see that we can move beyond simple user-to-item and item-to-item recommendations now that we have side information embedded in the same space as our users and items. Let&rsquo;s go!</p>
+
+<!-- PELICAN_END_SUMMARY -->
+
+<h2 id="history-lesson">History lesson</h2>
+
+<p>When I started working at Birchbox, I was tasked with finding a way to incorporate our rich customer information into the implicit feedback matrix factorization recommendation system. I had no idea what I was doing, so I did a lot of google searching. This proved a difficult problem because there are commonly two paradigms of recommender systems - content-based approaches, like when one has demographic customer data and uses this data to find other similar customers, and &ldquo;ratings-based&rdquo; approaches, like when one has data on what each user rated each item they interacted with. The desire was for me to marry these two approaches.</p>
+
+<p>Reading through the classic survey article, <a href="http://www.columbia.edu/~jwp2128/Teaching/W4721/papers/ieeecomputer.pdf">Matrix Factorization Techniques for Recommender Systems</a> (pdf link), revealed a section titled &ldquo;Additional Input Sources&rdquo;. This contains one such approach to incorporating so-called &ldquo;side information&rdquo; into a recommender system. The idea was relatively simple (well, simple relative to the initial hurdle of wrapping one&rsquo;s head around matrix factorization). Let&rsquo;s say that in a regular matrix factorization model, a user $u$ is represented by a single vector $\textbf{x}_{u}$ containing that user&rsquo;s latent factors (see previous posts for more background on this). Now, let&rsquo;s say that we have some demographic information about that user like</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">Feature</th>
+<th align="left">Value</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">gender</td>
+<td align="left">Female</td>
+</tr>
+
+<tr>
+<td align="left">age_bucket</td>
+<td align="left">25-34</td>
+</tr>
+
+<tr>
+<td align="left">income_bucket</td>
+<td align="left">$65-79K</td>
+</tr>
+</tbody>
+</table>
+
+<p>We can one-hot-encode each of these features into an &ldquo;attribute-space&rdquo; $A$ and assume that each each attribute $a$ has its own latent vector $\textbf{s}_{a}$. Lastly, we make the assumption that our &ldquo;total&rdquo; user vector is the original user vector $\textbf{x}_{u}$ plus each of the relevant attribute vectors. If $N(u)$ represents the set of attributes that pertain to user $u$, then the total user vector is</p>
+
+<p>$$\textbf{x}_{u} + \sum\limits_{a \in N(u)}\textbf{s}_{a}$$</p>
+
+<p>One can make the same set of assumptions for side information about the items, and now you can not only achieve better results with your recommendations, but you can also learn vectors and consequently similarities between the side information vectors. For a general overview of this, see a <a href="https://making.dia.com/embedding-everything-for-anything2anything-recommendations-fca7f58f53ff">post</a> I wrote for Dia&amp;Co&rsquo;s <a href="https://making.dia.com/">tech blog</a>.</p>
+
+<p>Ok, the approach is clear, so presumably we just add this to last post&rsquo;s implicit feedback objective function and solve, right? Well, I ran the math, and unfortunately this is not scalable. With the extra set of side information vectors, last post&rsquo;s Alternating Least Squares (ALS) becomes a three-way alternating problem. There was a special trick in that ALS optimization that exploited the sparsity of the data to scale the computation. Alas, this trick cannot be used during the stage of ALS where one is solving for the side information vectors.</p>
+
+<p>So what to do now?</p>
+
+<h2 id="learning-to-rank-bpr">Learning to Rank - BPR</h2>
+
+<p>It turns out that there is another method of optimizing implicit feedback matrix factorization problems which is neither ALS nor conventional stochastic gradient descent (SGD) on last post&rsquo;s objective function. This method of optimization typically goes by the name <a href="https://en.wikipedia.org/wiki/Learning_to_rank">Learning to Rank</a> and originated in information retrieval theory.</p>
+
+<p>A classic method of using Learning to Rank with implicit feedback was in the paper <a href="https://arxiv.org/pdf/1205.2618.pdf">BPR: Bayesian Personalized Ranking from Implicit Feedback</a> (pdf link) first-authored by Steffen Rendle who is kind of a badass in all things implicit and factorized. The idea is centered around sampling <em>positive</em> and <em>negative</em> items and running pairwise comparisons. Let&rsquo;s assume that for this example our dataset consists of the number of times users have clicked on various items on a website. BPR proceeds as follows (in simplified form):</p>
+
+<ol>
+<li>Randomly select a user $u$ and then select a random item $i$ which the user has clicked on. This is our <em>positive</em> item.</li>
+<li>Randomly select an item $j$ which the user has clicked on $fewer$ times than item $i$ (this includes items that they have never clicked). This is our <em>negative</em> item.</li>
+<li>Use whatever equation you want to predict the &ldquo;score&rdquo;, $p_{ui}$, for user $u$ and positive item $i$. For matrix factorization, this may be $\textbf{x}_{u} \cdot \textbf{y}_{i}$.</li>
+<li>Predict the score for user $u$ and negative item $j$, $p_{uj}$.</li>
+<li>Find the difference between the positive and negative scores $x_{uij} = p_{ui} - p_{uj}$.</li>
+<li>Pass this difference through a sigmoid and use it as a weighting for updating all of the model parameters via stochastic gradient descent (SGD).</li>
+</ol>
+
+<p>This method seemed kind of radical to me when I first read it. Notably, we do not care about the actual value of the score that we are predicting. All we care about is that we rank items which the user has clicked on more frequently higher than items which the user has clicked on fewer times. And thus, our model &ldquo;learns to rank&rdquo; :)</p>
+
+<p>Because this model employs a sampling-based approach, the authors show that it can be quite fast and scalable relative to other, slower methods. Additionally, the authors argue that BPR directly optimizes the area under the ROC curve (AUC) which could be a desirable characteristic. Most importantly for me, it allows one to easily add in side information without blowing up the computational speed.</p>
+
+<h2 id="learning-to-rank-warp">Learning to Rank - WARP</h2>
+
+<p>A close relative of BPR is Weighted Approximate-Rank Pairwise loss (WARP loss) first introduced in <a href="http://www.thespermwhale.com/jaseweston/papers/wsabie-ijcai.pdf">WSABIE: Scaling Up To Large Vocabulary Image Annotation</a> by Weston et. al. WARP is quite similar to BPR: you sample a positive and negative item for a user, predict for both, and take the difference. In BPR you then make the SGD update with this difference as a weight. In WARP, you only run the SGD update if you predict <em>wrong</em>, i.e. you predict the negative item has a higher score than the positive item. If you do not predict wrong, then you keep drawing negative items until you either get the prediction wrong or reach some cutoff value.</p>
+
+<p>The authors of the WARP paper claim that this process shifts from optimizing AUC in BPR to optimizing the precision @ k. The seems likely more relevant for most recommender systems, and I usually have better luck optimizing WARP loss over BPR loss. WARP does introduce two hyperparameters, though. One is the margin which determines how wrong your prediction must be to implement the SGD update. In the paper, the margin is 1 meaning you must guess $p_{uj} \gt p_{ui} + 1$ to implement the SGD update. The other hyperparameter is the cutoff which determines how many times you&rsquo;re willing to draw negative samples trying to get a wrong prediction before you give up and move on to the next user.</p>
+
+<p>This sampling approach causes WARP to run quickly when it starts training because you easily get predictions wrong with an untrained model. After training, though, WARP will run slower because it has to sample and predict many items until it gets a wrong prediction and can update. Sounds like a positive problem if it&rsquo;s hard to get your model to predict wrong, though.</p>
+
+<h2 id="lightfm">LightFM</h2>
+
+<p>Back to my Birchbox story. I originally implemented BPR with side information in pure numpy and scipy. This proved to be quite slow, and around that time the <a href="https://github.com/lyst/lightfm">LightFM</a> package was open sourced by the people at Lyst. LightFM is written in Cython and is paralellized via HOGWILD SGD. This blew my code out of the water, and I happily switched over to LightFM.</p>
+
+<p>LightFM uses the same method as above to incorporate side information - it assumes that the total &ldquo;user vector&rdquo; is the sum of each of the user&rsquo;s relevant side information vectors (which it calls user &ldquo;features) and treats the items analogously. Above, we assumed that we had two types of latent vectors: $\textbf{x}_{u}$ and $\textbf{s}_{a}$. LightFM treats everything as side information, or features. If we want to have a specific user vector for user $u$, then we must one-hot-encode that as a single feature for that user.</p>
+
+<p>Let&rsquo;s go ahead and install LightFM, read in our good old Sketchfab &ldquo;likes&rdquo; data as well as the model tags, and see if we can get better results with LightFM than we did last post using classic ALS.</p>
+
+<h3 id="installation">Installation</h3>
+
+<p>LightFM is on pypi, so you can install simplest with pip:</p>
+
+<pre><code class="language-bash">pip install lightfm
+</code></pre>
+
+<p>If you are on a mac, then you will unfortunately not be able to run your code in parallel out of the box. If you would like to use parallelization, you must first make sure you have gcc which can be installed with <code>brew</code>:</p>
+
+<pre><code class="language-bash">brew install gcc --without-multilib
+</code></pre>
+
+<p>Be careful, this takes like 30 minutes. The simplest way I&rsquo;ve then found to building LightFM is to trick it. First clone the repository</p>
+
+<pre><code class="language-bash">git clone git@github.com:lyst/lightfm.git
+</code></pre>
+
+<p>Then, open <code>setup.py</code> go to where the variable <code>use_openmp</code> is defined, and hard set it to <code>True</code>. Then, <code>cd lightfm &amp;&amp; pip install -e .</code></p>
+
+<p>With all that done, let&rsquo;s write some code to train some models.</p>
+
+<h3 id="data-preprocessing">Data preprocessing</h3>
+
+<p>I took a lot of the functions used last time for arranging the Sketchfab data into a matrix and placed them all in a <code>helpers.py</code> file in the rec-a-sketch repo.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">%matplotlib inline
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import scipy.sparse as sp
+from scipy.special import expit
+import pickle
+import csv
+import copy
+import itertools
+from lightfm import LightFM
+import lightfm.evaluation
+import sys
+sys.path.append('../')
+import helpers
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">df = pd.read_csv('../data/model_likes_anon.psv',
+                 sep='|', quoting=csv.QUOTE_MINIMAL,
+                 quotechar='\\')
+df.drop_duplicates(inplace=True)
+df.head()
+</code></pre>
+
+</div>
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>modelname</th>
+      <th>mid</th>
+      <th>uid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>3D fanart Noel From Sora no Method</td>
+      <td>5dcebcfaedbd4e7b8a27bd1ae55f1ac3</td>
+      <td>7ac1b40648fff523d7220a5d07b04d9b</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>3D fanart Noel From Sora no Method</td>
+      <td>5dcebcfaedbd4e7b8a27bd1ae55f1ac3</td>
+      <td>2b4ad286afe3369d39f1bb7aa2528bc7</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3D fanart Noel From Sora no Method</td>
+      <td>5dcebcfaedbd4e7b8a27bd1ae55f1ac3</td>
+      <td>1bf0993ebab175a896ac8003bed91b4b</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3D fanart Noel From Sora no Method</td>
+      <td>5dcebcfaedbd4e7b8a27bd1ae55f1ac3</td>
+      <td>6484211de8b9a023a7d9ab1641d22e7c</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>3D fanart Noel From Sora no Method</td>
+      <td>5dcebcfaedbd4e7b8a27bd1ae55f1ac3</td>
+      <td>1109ee298494fbd192e27878432c718a</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python"># Threshold data to only include users and models with min 5 likes.
+df = helpers.threshold_interactions_df(df, 'uid', 'mid', 5, 5)
+</code></pre>
+
+</div>
+
+
+<pre><code>Starting interactions info
+Number of rows: 62583
+Number of cols: 28806
+Sparsity: 0.035%
+Ending interactions info
+Number of rows: 15274
+Number of columns: 25655
+Sparsity: 0.140%
+</code></pre>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python"># Go from dataframe to likes matrix
+# Also, build index to ID mappers.
+likes, uid_to_idx, idx_to_uid,\
+mid_to_idx, idx_to_mid = helpers.df_to_matrix(df, 'uid', 'mid')
+
+likes
+</code></pre>
+
+</div>
+
+
+<pre><code>&lt;15274x25655 sparse matrix of type '&lt;class 'numpy.float64'&gt;'
+    with 547477 stored elements in Compressed Sparse Row format&gt;
+</code></pre>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">train, test, user_index = helpers.train_test_split(likes, 5, fraction=0.2)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>The one odd thing that we must do which is different than last time is to copy the training data to only include users with data in the test set. This is due to using LightFM&rsquo;s built-in <code>precision_at_k</code> function as opposed to our hand-rolled one last time and is not particularly interesting.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">eval_train = train.copy()
+non_eval_users = list(set(range(train.shape[0])) - set(user_index))
+
+eval_train = eval_train.tolil()
+for u in non_eval_users:
+    eval_train[u, :] = 0.0
+eval_train = eval_train.tocsr()
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>Now we want to one-hot-encode all of the side information that we have about the Sketchfab models. Recall that this information included categories and tags associated with each model. The simplest way I&rsquo;ve found to go about encoding this information is to use scikit-learn&rsquo;s <a href="http://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.DictVectorizer.html">DictVectorizer</a> class. The <code>DictVectorizer</code> takes in a list of dictionaries where the dictionaries contain features names as keys and weights as values. Here, we&rsquo;ll assume that each weight is 1, and we&rsquo;ll take the key to be the combination of the tag type and value.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">sideinfo = pd.read_csv('../data/model_feats.psv',
+                       sep='|', quoting=csv.QUOTE_MINIMAL,
+                       quotechar='\\')
+sideinfo.head()
+</code></pre>
+
+</div>
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>mid</th>
+      <th>type</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>5dcebcfaedbd4e7b8a27bd1ae55f1ac3</td>
+      <td>category</td>
+      <td>Characters</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>5dcebcfaedbd4e7b8a27bd1ae55f1ac3</td>
+      <td>category</td>
+      <td>Gaming</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>5dcebcfaedbd4e7b8a27bd1ae55f1ac3</td>
+      <td>tag</td>
+      <td>3dsmax</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>5dcebcfaedbd4e7b8a27bd1ae55f1ac3</td>
+      <td>tag</td>
+      <td>noel</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5dcebcfaedbd4e7b8a27bd1ae55f1ac3</td>
+      <td>tag</td>
+      <td>loli</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python"># There's probably a fancy pandas groupby way to do
+# this but I couldn't figure it out :(
+
+# Build list of dictionaries containing features 
+# and weights in same order as idx_to_mid prescribes.
+feat_dlist = [{} for _ in idx_to_mid]
+for idx, row in sideinfo.iterrows():
+    feat_key = '{}_{}'.format(row.type, str(row.value).lower())
+    idx = mid_to_idx.get(row.mid)
+    if idx is not None:
+        feat_dlist[idx][feat_key] = 1
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">feat_dlist[0]
+</code></pre>
+
+</div>
+
+
+<pre><code>{'category_characters': 1,
+ 'category_gaming': 1,
+ 'tag_3d': 1,
+ 'tag_3dcellshade': 1,
+ 'tag_3dsmax': 1,
+ 'tag_anime': 1,
+ 'tag_girl': 1,
+ 'tag_loli': 1,
+ 'tag_noel': 1,
+ 'tag_soranomethod': 1}
+</code></pre>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">from sklearn.feature_extraction import DictVectorizer
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">dv = DictVectorizer()
+item_features = dv.fit_transform(feat_dlist)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">item_features
+</code></pre>
+
+</div>
+
+
+<pre><code>&lt;25655x20352 sparse matrix of type '&lt;class 'numpy.float64'&gt;'
+    with 161510 stored elements in Compressed Sparse Row format&gt;
+</code></pre>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>We are now left with an <code>item_features</code> matrix where each row is a unique item (in the same order as the columns of the <code>likes</code> matrix), and each column is a unique tag. It looks like there are 20352 unique tags!</p>
+
+<h3 id="training">Training</h3>
+
+<p>Let&rsquo;s try a simple WARP run on LightFM using the default settings and ignoring the item features to start. I am only going to focus on WARP today, as I&rsquo;ve never had much luck with BPR. I will create a small function to calculate the learning curve.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">def print_log(row, header=False, spacing=12):
+    top = ''
+    middle = ''
+    bottom = ''
+    for r in row:
+        top += '+{}'.format('-'*spacing)
+        if isinstance(r, str):
+            middle += '| {0:^{1}} '.format(r, spacing-2)
+        elif isinstance(r, int):
+            middle += '| {0:^{1}} '.format(r, spacing-2)
+        elif (isinstance(r, float)
+              or isinstance(r, np.float32)
+              or isinstance(r, np.float64)):
+            middle += '| {0:^{1}.5f} '.format(r, spacing-2)
+        bottom += '+{}'.format('='*spacing)
+    top += '+'
+    middle += '|'
+    bottom += '+'
+    if header:
+        print(top)
+        print(middle)
+        print(bottom)
+    else:
+        print(middle)
+        print(top)
+
+def patk_learning_curve(model, train, test, eval_train,
+                        iterarray, user_features=None,
+                        item_features=None, k=5,
+                        **fit_params):
+    old_epoch = 0
+    train_patk = []
+    test_patk = []
+    headers = ['Epoch', 'train p@5', 'test p@5']
+    print_log(headers, header=True)
+    for epoch in iterarray:
+        more = epoch - old_epoch
+        model.fit_partial(train, user_features=user_features,
+                          item_features=item_features,
+                          epochs=more, **fit_params)
+        this_test = lightfm.evaluation.precision_at_k(model, test, train_interactions=None, k=k)
+        this_train = lightfm.evaluation.precision_at_k(model, eval_train, train_interactions=None, k=k)
+
+        train_patk.append(np.mean(this_train))
+        test_patk.append(np.mean(this_test))
+        row = [epoch, train_patk[-1], test_patk[-1]]
+        print_log(row)
+    return model, train_patk, test_patk
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">model = LightFM(loss='warp', random_state=2016)
+# Initialize model.
+model.fit(train, epochs=0);
+
+iterarray = range(10, 110, 10)
+
+model, train_patk, test_patk = patk_learning_curve(
+    model, train, test, eval_train, iterarray, k=5, **{'num_threads': 4}
+)
+</code></pre>
+
+</div>
+
+
+<pre><code>+------------+------------+------------+
+|   Epoch    | train p@5  |  test p@5  |
++============+============+============+
+|     10     |  0.14303   |  0.02541   |
++------------+------------+------------+
+|     20     |  0.16267   |  0.02947   |
++------------+------------+------------+
+|     30     |  0.16876   |  0.03183   |
++------------+------------+------------+
+|     40     |  0.17282   |  0.03294   |
++------------+------------+------------+
+|     50     |  0.17701   |  0.03333   |
++------------+------------+------------+
+|     60     |  0.17872   |  0.03287   |
++------------+------------+------------+
+|     70     |  0.17583   |  0.03333   |
++------------+------------+------------+
+|     80     |  0.17793   |  0.03386   |
++------------+------------+------------+
+|     90     |  0.17479   |  0.03392   |
++------------+------------+------------+
+|    100     |  0.17656   |  0.03301   |
++------------+------------+------------+
+</code></pre>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">import seaborn as sns
+sns.set_style('white')
+
+def plot_patk(iterarray, patk,
+              title, k=5):
+    plt.plot(iterarray, patk);
+    plt.title(title, fontsize=20);
+    plt.xlabel('Epochs', fontsize=24);
+    plt.ylabel('p@{}'.format(k), fontsize=24);
+    plt.xticks(fontsize=14);
+    plt.yticks(fontsize=14);
+
+# Plot train on left
+ax = plt.subplot(1, 2, 1)
+fig = ax.get_figure();
+sns.despine(fig);
+plot_patk(iterarray, train_patk,
+         'Train', k=5)
+
+# Plot test on right
+ax = plt.subplot(1, 2, 2)
+fig = ax.get_figure();
+sns.despine(fig);
+plot_patk(iterarray, test_patk,
+         'Test', k=5)
+
+plt.tight_layout();
+</code></pre>
+
+</div>
+
+
+
+
+
+<figure>
+    
+        <img src="http://ethanrosenthal.com/2016/11/07/implicit-mf-part-2/./index_18_0.png"/> </figure>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<h2 id="optimizing-hyperparameters-with-scikit-optimize">Optimizing Hyperparameters with <code>scikit-optimize</code></h2>
+
+<p>Now that we have a baseline, we would like to find optimal hyperparameters to maximize our p@k. On a side note, I&rsquo;m not sure if precision at k is the best metric to be using here when all of our interactions are binary, but let&rsquo;s just ignore that for now&hellip;</p>
+
+<p>Last post I ran a grid search over a bunch of hyperparameters, and it took forever. It&rsquo;s been shown that a randomized search is better than explicit grid search, but we can do even better. Using the <a href="https://scikit-optimize.github.io/">scikit-optimize</a> (<code>skopt</code>) library, we can treat the hyperpameters as free parameters to search over while using a black box optimization algorithm to maximize p@k. There are a number of optimization algorithms to pick from, but I&rsquo;ll just stick with <code>forest_minimize</code> today.</p>
+
+<p>The setup is pretty simple. You must first define an objective function that you want to minimize. The objective receives the parameters that you want to solve for as the arguments and returns the objective value at those parameters. Thus, for our case, we pass in the hyperparameters, we train the <code>LightFM</code> model with those parameters, and then return the p@k evaluated after training. Importantly, we must return the negative of the p@k because the objective must be <em>minimized</em>, so maximizing p@k is the same as minimizing the negative of the p@k. The last thing to note is that one must make liberal use of global variables because one can only pass hyperparameters to the objective function.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">from skopt import forest_minimize
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">def objective(params):
+    # unpack
+    epochs, learning_rate,\
+    no_components, alpha = params
+    
+    user_alpha = alpha
+    item_alpha = alpha
+    model = LightFM(loss='warp',
+                    random_state=2016,
+                    learning_rate=learning_rate,
+                    no_components=no_components,
+                    user_alpha=user_alpha,
+                    item_alpha=item_alpha)
+    model.fit(train, epochs=epochs,
+              num_threads=4, verbose=True)
+    
+    patks = lightfm.evaluation.precision_at_k(model, test,
+                                              train_interactions=None,
+                                              k=5, num_threads=4)
+    mapatk = np.mean(patks)
+    # Make negative because we want to _minimize_ objective
+    out = -mapatk
+    # Handle some weird numerical shit going on
+    if np.abs(out + 1) &lt; 0.01 or out &lt; -1.0:
+        return 0.0
+    else:
+        return out
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>With the objective function defined, we can define ranges for our hyperparameters. These can either be simple max and mins or we can assume a distribution like below. With the ranges defined, we simple call <code>forest_minimize</code> and wait a pretty long time.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">space = [(1, 260), # epochs
+         (10**-4, 1.0, 'log-uniform'), # learning_rate
+         (20, 200), # no_components
+         (10**-6, 10**-1, 'log-uniform'), # alpha
+        ]
+
+res_fm = forest_minimize(objective, space, n_calls=250,
+                     random_state=0,
+                     verbose=True)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">print('Maximimum p@k found: {:6.5f}'.format(-res_fm.fun))
+print('Optimal parameters:')
+params = ['epochs', 'learning_rate', 'no_components', 'alpha']
+for (p, x_) in zip(params, res_fm.x):
+    print('{}: {}'.format(p, x_))
+</code></pre>
+
+</div>
+
+
+<pre><code>Maximimum p@k found: 0.04781
+Optimal parameters:
+epochs: 168
+learning_rate: 0.09126423099690231
+no_components: 104
+alpha: 0.00023540795300720628
+</code></pre>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>No too shabby! We started with a p@k of ~0.034 with base hyperparameters, and then increased it to 0.0478 by finding better ones. Let&rsquo;s see what happens if we add in our item features as side information to the matrix factorization model.</p>
+
+<h2 id="learning-to-rank-side-information">Learning to Rank + Side Information</h2>
+
+<p><code>LightFM</code> makes certain subtle assumptions when you do or do not pass side information. When no <code>user_features</code> or <code>item_features</code> are explicitly included, then <code>LightFM</code> assumes that both feature matrices are in fact identity matrices of size (<code>num_users</code> X <code>num_users</code>) or (<code>num_items</code> X <code>num_items</code>) for user and item feature matrices, respectively. What this is effectively doing is one-hot-encoding each user and item ID as a single feature vector. In the case where you do pass an <code>item_features</code> matrix, then <code>LightFM</code> does not do any one-hot-encoding. Thus, each user and item ID does not get its own vector unless you explicitly define one. The easiest way to do this is to make your own identity matrix and stack it on the side of the <code>item_features</code> matrix that we already created. This way, each item is described by a single vector for its unique ID and then a set of vectors for each of its tags.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python"># Need to hstack item_features
+eye = sp.eye(item_features.shape[0], item_features.shape[0]).tocsr()
+item_features_concat = sp.hstack((eye, item_features))
+item_features_concat = item_features_concat.tocsr().astype(np.float32)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>We now need to define a new objective function that incorporates the <code>item_features</code>.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">def objective_wsideinfo(params):
+    # unpack
+    epochs, learning_rate,\
+    no_components, item_alpha,\
+    scale = params
+    
+    user_alpha = item_alpha * scale
+    model = LightFM(loss='warp',
+                    random_state=2016,
+                    learning_rate=learning_rate,
+                    no_components=no_components,
+                    user_alpha=user_alpha,
+                    item_alpha=item_alpha)
+    model.fit(train, epochs=epochs,
+              item_features=item_features_concat,
+              num_threads=4, verbose=True)
+    
+    patks = lightfm.evaluation.precision_at_k(model, test,
+                                              item_features=item_features_concat,
+                                              train_interactions=None,
+                                              k=5, num_threads=3)
+    mapatk = np.mean(patks)
+    # Make negative because we want to _minimize_ objective
+    out = -mapatk
+    # Weird shit going on
+    if np.abs(out + 1) &lt; 0.01 or out &lt; -1.0:
+        return 0.0
+    else:
+        return out
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>With that defined, let&rsquo;s now run a new hyperparameter search. I will add an extra scaling parameter which will control the scaling between the user and item item regularization (alpha) terms. Because of all of the extra item features, we may want to regularize things differently. We&rsquo;ll also input an <code>x0</code> term to <code>forest_minimization</code> which will allow us to start our hyperparameter search at the optimal parameters from the previous run without side information.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">space = [(1, 260), # epochs
+         (10**-3, 1.0, 'log-uniform'), # learning_rate
+         (20, 200), # no_components
+         (10**-5, 10**-3, 'log-uniform'), # item_alpha
+         (0.001, 1., 'log-uniform') # user_scaling
+        ]
+x0 = res_fm.x.append(1.)
+# This typecast is required
+item_features = item_features.astype(np.float32)
+res_fm_itemfeat = forest_minimize(objective_wsideinfo, space, n_calls=50,
+                                  x0=x0,
+                                  random_state=0,
+                                  verbose=True)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">print('Maximimum p@k found: {:6.5f}'.format(-res_fm_itemfeat.fun))
+print('Optimal parameters:')
+params = ['epochs', 'learning_rate', 'no_components', 'item_alpha', 'scaling']
+for (p, x_) in zip(params, res_fm_itemfeat.x):
+    print('{}: {}'.format(p, x_))
+</code></pre>
+
+</div>
+
+
+<pre><code>Maximimum p@k found: 0.04610
+Optimal parameters:
+epochs: 192
+learning_rate: 0.06676184785227865
+no_components: 86
+item_alpha: 0.0005563892936299544
+scaling: 0.6960826359109953
+</code></pre>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>Now, you might be thinking &ldquo;Ethan, we went through all that only to get <em>worse</em> p@k?!&ldquo;, and, frankly, I share your frustration. I&rsquo;ve actually seen this happen before - adding side information will sometimes reduce or at least not increase whatever metric you&rsquo;re looking for. In all fairness, I only ran the above optimization for 50 calls, as opposed to the original one with 250 calls. This was mainly due to the matrix factorization model running much slower due to scaling with the number of user and item features.</p>
+
+<p>Even so, there are other reasons that the results could be worse. Maybe user behavior is a much better signal than human-defined tags and categories. The tag information could be poor for some of the models. As well, one may need to scale the tags <em>differently</em> compared to the unique ID vectors using, say, separate regularization terms, in order to get better behavior. Maybe one should normalize the tag weights by the number of tags. Maybe tags should not be included unless they have been used on at least <code>X</code> models. Maybe tags should only be included on models with few user interactions because after that ponit the cold start problem is sufficiently null. Who knows?! These are experiments I&rsquo;d love to run, but I&rsquo;d be happy to hear from others&rsquo; experience.</p>
+
+<h2 id="fun-with-feature-embeddings">Fun with Feature Embeddings</h2>
+
+<p>Regardless of all of this, there is still a benefit to incorporating the item features. Because they have vectors embedded in the same space as the users and items, we can play with different types of recommendations. We&rsquo;ll first retrain the model on the full dataset using the optimal parameters.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">epochs, learning_rate,\
+no_components, item_alpha,\
+scale = res_fm_itemfeat.x
+
+user_alpha = item_alpha * scale
+model = LightFM(loss='warp',
+                random_state=2016,
+                learning_rate=learning_rate,
+                no_components=no_components,
+                user_alpha=user_alpha,
+                item_alpha=item_alpha)
+model.fit(likes, epochs=epochs,
+          item_features=item_features_concat,
+          num_threads=4)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<h3 id="feature-sorting">Feature Sorting</h3>
+
+<p>Imagine you&rsquo;re on Sketchfab and click the tag <a href="https://sketchfab.com/tags/tiltbrush">tiltbrush</a> which would presumably correspond to models created with Google&rsquo;s <a href="https://www.tiltbrush.com/">Tilt Brush</a> VR appliction. How should Sketchfab return the results to you? They currently return results based on the popularity of the items which is presumably not connected to the &ldquo;tiltbrushiness&rdquo; of the models. With the factorized tags, we can now return a list of products that are <em>most similar</em> to the tiltbrush tag sorted by that similarity. To do this, we must find the tiltbrush vector and measure the cosine similarity to every product.</p>
+
+<p>Recall that we tacked our identity matrix onto the left-hand side of the item_features matrix. This means that our <code>DictVectorizer</code>, which mapped our item features to column indices of our <code>item_features</code> matrix, will have indices that are off by the number of items.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">idx = dv.vocabulary_['tag_tiltbrush'] + item_features.shape[0]
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>Next, we need to calculate the cosine similarity between the tiltbrush vector and all other item <em>representations</em> where each item&rsquo;s representation is the sum of its feature vectors. These feature vectors are stored as <code>item_embeddings</code> in the LightFM model. (<em>Note: there are technically bias terms in the LightFM model that we are simply ignoring for now</em>).</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">def cosine_similarity(vec, mat):
+    sim = vec.dot(mat.T)
+    matnorm = np.linalg.norm(mat, axis=1)
+    vecnorm = np.linalg.norm(vec)
+    return np.squeeze(sim / matnorm / vecnorm)
+
+tilt_vec = model.item_embeddings[[idx], :]
+item_representations = item_features_concat.dot(model.item_embeddings)
+sims = cosine_similarity(tilt_vec, item_representations)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>Lastly, we can repurpose some code from the last blog post to visualize the top 5 Sketchfab model thumbnails that are most similar to the tiltbrush vector.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">import requests
+def get_thumbnails(row, idx_to_mid, N=10):
+    thumbs = []
+    mids = []
+    for x in np.argsort(-row)[:N]:
+        response = requests.get('https://sketchfab.com/i/models/{}'\
+                                .format(idx_to_mid[x])).json()
+        thumb = [x['url'] for x in response['thumbnails']['images']
+                 if x['width'] == 200 and x['height']==200]
+        if not thumb:
+            print('no thumbnail')
+        else:
+            thumb = thumb[0]
+        thumbs.append(thumb)
+        mids.append(idx_to_mid[x])
+    return thumbs, mids
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">from IPython.display import display, HTML
+
+def display_thumbs(thumbs, mids, N=5):
+    thumb_html = &quot;&lt;a href='{}' target='_blank'&gt;\
+                  &lt;img style='width: 160px; margin: 0px; \
+                  border: 1px solid black;' \
+                  src='{}' /&gt;&lt;/a&gt;&quot;
+    images = ''
+    for url, mid in zip(thumbs[0:N], mids[0:N]):
+        link = 'http://sketchfab.com/models/{}'.format(mid)
+        images += thumb_html.format(link, url)
+    display(HTML(images))
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">display_thumbs(*get_thumbnails(sims, idx_to_mid))
+</code></pre>
+
+</div>
+
+
+<p><a href='http://sketchfab.com/models/62d12cbb47df40d2bb40e8f66012cc09' target='_blank'>                  <img style='width: 160px; margin: 0px;                   border: 1px solid black;'                   src='images/implicit-mf-part2/62d12cbb47df40d2bb40e8f66012cc09.jpg' /></a><a href='http://sketchfab.com/models/f09ebdff0e9d40379979c45e721d72c4' target='_blank'>                  <img style='width: 160px; margin: 0px;                   border: 1px solid black;'                   src='images/implicit-mf-part2/f09ebdff0e9d40379979c45e721d72c4.jpg' /></a><a href='http://sketchfab.com/models/62415539695042b48ad62675bff74105' target='_blank'>                  <img style='width: 160px; margin: 0px;                   border: 1px solid black;'                   src='images/implicit-mf-part2/62415539695042b48ad62675bff74105.jpg' /></a><a href='http://sketchfab.com/models/a28b3a0fa83443df97c98068f23d62e8' target='_blank'>                  <img style='width: 160px; margin: 0px;                   border: 1px solid black;'                   src='images/implicit-mf-part2/a28b3a0fa83443df97c98068f23d62e8.jpg' /></a><a href='http://sketchfab.com/models/b27ee46609814315b207bca92ffc767b' target='_blank'>                  <img style='width: 160px; margin: 0px;                   border: 1px solid black;'                   src='images/implicit-mf-part2/b27ee46609814315b207bca92ffc767b.jpg' /></a></p>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>Pretty cool! Looks like each of these are made with Tiltbrush. Feel free to click the above images to check out each model on the Sketchfab website.</p>
+
+<p>What else can we do?</p>
+
+<h3 id="tag-suggestions">Tag Suggestions</h3>
+
+<p>Let&rsquo;s say that Sketchfab would like to encourage people to use more tags. This is advantageous to the company because it get users to create structured data for them for free while engaging the user. Sketchfab could encourage this behavior by suggesting tags to go with an image. One way we could do this would be to take a model and suggest tags to go with it that are not currently there. This involves finding tag vectors that are most similar to the model and then filtering tags that are already present.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">idx = 900
+mid = idx_to_mid[idx]
+def display_single(mid):
+    &quot;&quot;&quot;Display thumbnail for a single model&quot;&quot;&quot;
+    response = requests.get('https://sketchfab.com/i/models/{}'\
+                            .format(mid)).json()
+    thumb = [x['url'] for x in response['thumbnails']['images']
+             if x['width'] == 200 and x['height']==200][0]
+    thumb_html = &quot;&lt;a href='{}' target='_blank'&gt;\
+                  &lt;img style='width: 200px; margin: 0px; \
+                  border: 1px solid black;' \
+                  src='{}' /&gt;&lt;/a&gt;&quot;
+    link = 'http://sketchfab.com/models/{}'.format(mid)
+    display(HTML(thumb_html.format(link, thumb)))
+
+display_single(mid)
+
+# Make mapper to map from from feature index to feature name
+idx_to_feat = {v: k for (k, v) in dv.vocabulary_.items()}
+print('Tags:')
+for i in item_features.getrow(idx).indices:
+    print('- {}'.format(idx_to_feat[i]))
+</code></pre>
+
+</div>
+
+
+<p><a href='http://sketchfab.com/models/381cbf8a06f042b9b41932f1f7ada997' target='_blank'><img style='width: 200px; margin: 0px;               border: 1px solid black;' src='images/implicit-mf-part2/381cbf8a06f042b9b41932f1f7ada997.jpg' /></a></p>
+
+<pre><code>Tags:
+- category_architecture
+- category_characters
+- category_cultural heritage
+- category_products &amp; technology
+- category_science, nature &amp; education
+- tag_rock
+- tag_sculpture
+- tag_woman
+</code></pre>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python"># Indices of all tag vectors
+tag_indices = set(v for (k, v) in dv.vocabulary_.items()
+                  if k.startswith('tag_'))
+# Tags that are already present
+filter_tags = set(i for i in item_features.getrow(idx).indices)
+
+item_representation = item_features_concat[idx, :].dot(model.item_embeddings)
+sims = cosine_similarity(item_representation, model.item_embeddings)
+
+suggested_tags = []
+i = 0
+recs = np.argsort(-sims)
+n_items = item_features.shape[0]
+while len(suggested_tags) &lt; 10:
+    offset_idx = recs[i] - n_items
+    if offset_idx in tag_indices\
+       and offset_idx not in filter_tags:
+        suggested_tags.append(idx_to_feat[offset_idx])
+    i += 1
+print('Suggested Tags:')
+for t in suggested_tags:
+    print('- {}'.format(t))
+</code></pre>
+
+</div>
+
+
+<pre><code>Suggested Tags:
+- tag_greek
+- tag_castel
+- tag_santangelo
+- tag_eros
+- tag_humanti
+- tag_galleria
+- tag_batholith
+- tag_rome
+- tag_substanced880
+- tag_roman
+</code></pre>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<h2 id="quick-conclusion">Quick conclusion</h2>
+
+<p>So this post was long. There was a lot to learn and a lot of parameters to optimize. I&rsquo;d like to note that, in terms of out of the box performance, it&rsquo;s hard to beat the ALS model from last post. There&rsquo;s fewer parameters to optimize, and the model is much more &ldquo;forgiving&rdquo; of being a bit off in your hyperparameters. Contrastingly, if your learning rate is poor, then SGD will give you <em>nothing</em> in return. It is definitely possible to beat ALS in performance, though, if you spend enough time fiddling around. Moreover, the ability to incorporate side information is important for being able to make new types of recommendations and overcome the cold start problem, so it&rsquo;s good to have this in your toolbox.</p>
+
+</div>
+
+
+              </article>
+
+              <div class="pagination">
+                  
+                      <a href="http://ethanrosenthal.com/2016/10/19/implicit-mf-part-1/">&laquo; Intro to Implicit Matrix Factorization: Classic ALS with Sketchfab Models</a>
+                  
+                  
+                      <a href="http://ethanrosenthal.com/2016/12/05/recasketch-keras/">Using Keras&#39; Pretrained Neural Networks for Visual Similarity Recommendations &raquo;</a>
+                  
+              </div>
+          </section>
+          <br>
+          <section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view comments powered by <a href="http://disqus.com/?ref_noscript">Disqus</a>.</noscript>
+</section>
+
+      </section>
+
+    </main>
+    <footer class="row middle-xs center-xs">
+
+  
+  
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://github.com/EthanRosenthal">GitHub</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://linkedin.com/in/ethanrosenthal">LinkedIn</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://twitter.com/eprosenthal">Twitter</a></div>
+  
+
+  
+    <div class="col-xs-12">
+      
+        Copyright &copy; 2018 ethan rosenthal.
+      
+      
+        <a href="https://tomanistor.com" target="_blank">Theme developed by Toma Nistor</a>
+      
+    </div>
+  
+
+</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.js" integrity="sha384-483A6DwYfKeDa0Q52fJmxFXkcPCFfnXMoXblOkJ4JcA8zATN6Tm78UNL72AKk+0O" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/contrib/auto-render.min.js" integrity="sha384-yACMu8JWxKzSp/C1YV86pzGiQ/l1YUfE8oPuahJQxzehAjEt2GiQuy/BIvl9KyeF" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function(){
+        	renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "\\\\begin{equation*}", right: "\\\\end{equation*}", display: true},
+                    {left: "$$", right: "$$", display: true},
+                    {left: "\\\[", right: "\\\]", display: true},
+                    {left: "$", right: "$", display: false},
+                    {left: "\\\(", right: "\\\)", display: false}
+                ]
+            });
+        });
+    </script>
+
+
+  <script src="http://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
+
+
+  </body>
+</html>

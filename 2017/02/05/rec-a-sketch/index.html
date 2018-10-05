@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+  
+
+  <title>
+    
+    
+        Rec-a-Sketch: a Flask App for Interactive Sketchfab Recommendations | ethan rosenthal
+    
+  </title>
+
+  <meta name="title" content="Rec-a-Sketch: a Flask App for Interactive Sketchfab Recommendations | ethan rosenthal">
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta name="generator" content="">
+  <base href="http://ethanrosenthal.com">
+
+  
+    <meta name="description" content="After the long series of previous posts describing various recommendation algorithms using Sketchfab data, I decided to build a website called Rec-a-Sketch which visualizes the different algorithms&rsquo; recommendations. In this post, I&rsquo;ll describe the process of getting this website up and running on AWS with nginx and gunicorn.
+Goal The goal of the website was two-fold.
+ I wanted to view the different algorithm&rsquo;s recommendations side-by-side for comparison. I wanted to get &ldquo;lost&rdquo; in the recommendations like one gets lost clicking from link to link on Wikipedia.">
+  
+
+  
+    <meta name="author" content="Ethan Rosenthal">
+  
+
+  
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@eprosenthal">
+    <meta name="twitter:creator" content="@eprosenthal">
+  
+
+  <meta property="og:title" content="Rec-a-Sketch: a Flask App for Interactive Sketchfab Recommendations | ethan rosenthal">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://ethanrosenthal.com">
+
+  
+    <meta property="og:image" content="http://ethanrosenthal.com/images/profile_pic2.jpg">
+  
+
+  
+    <meta name="og:description" content="After the long series of previous posts describing various recommendation algorithms using Sketchfab data, I decided to build a website called Rec-a-Sketch which visualizes the different algorithms&rsquo; recommendations. In this post, I&rsquo;ll describe the process of getting this website up and running on AWS with nginx and gunicorn.
+Goal The goal of the website was two-fold.
+ I wanted to view the different algorithm&rsquo;s recommendations side-by-side for comparison. I wanted to get &ldquo;lost&rdquo; in the recommendations like one gets lost clicking from link to link on Wikipedia.">
+  
+
+  
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.ico">
+    <meta name="theme-color" content="#FFF">
+  
+
+  <link rel="canonical" href="http://ethanrosenthal.com/2017/02/05/rec-a-sketch/">
+
+  
+
+  <link rel="stylesheet" href="http://ethanrosenthal.com/styles/main.css" type="text/css">
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+
+  
+
+  
+    <link href="http://ethanrosenthal.comcss/dataframe.css" rel="stylesheet" type="text/css">
+  
+
+  
+</head>
+
+  <body>
+    
+
+
+
+<nav class="row middle-xs center-xs">
+  <div class="col-xs-6 col-sm-1 logo">
+    <a href="http://ethanrosenthal.com#"><img src="http://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
+  </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#blog">Blog</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="https://physics.ethanrosenthal.com">Physics</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#about">About</a></h3>
+      </div>
+    
+  <div class="col-xs-6 col-sm-1 nav-toggle">
+      <a href="" class="nav-icon" onclick="return false"><img src="http://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="http://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
+  </div>
+</nav>
+
+<section class="nav-full row middle-xs center-xs">
+  <div class="col-xs-12">
+    <div class="row middle-xs center-xs">
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#blog">Blog</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="https://physics.ethanrosenthal.com">Physics</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#about">About</a></h1></div>
+      
+    </div>
+  </div>
+</section>
+
+    <main>
+
+      <section class="container">
+          <section class="content">
+              <h1> Rec-a-Sketch: a Flask App for Interactive Sketchfab Recommendations </h1>
+
+              <div class="sub-header">
+                  February 5, 2017 · 6 minute read
+              </div>
+
+              <article class="entry-content">
+                  
+
+<div class="jupyter-cell markdown">
+
+
+<!-- PELICAN_BEGIN_SUMMARY -->
+
+<p>After the long <a href="http://ethanrosenthal.com/2016/10/09/likes-out-guerilla-dataset/">series</a> <a href="http://ethanrosenthal.com/2016/10/19/implicit-mf-part-1/">of</a> <a href="http://ethanrosenthal.com/2016/11/07/implicit-mf-part-2/">previous</a> <a href="http://ethanrosenthal.com/2016/12/05/recasketch-keras/">posts</a> describing various recommendation algorithms using Sketchfab data, I decided to build a website called <a href="http://www.rec-a-sketch.science/">Rec-a-Sketch</a> which visualizes the different algorithms&rsquo; recommendations. In this post, I&rsquo;ll describe the process of getting this website up and running on AWS with nginx and gunicorn.</p>
+
+<!-- PELICAN_END_SUMMARY -->
+
+<h2 id="goal">Goal</h2>
+
+<p>The goal of the website was two-fold.</p>
+
+<ol>
+<li>I wanted to view the different algorithm&rsquo;s recommendations side-by-side for comparison.</li>
+<li>I wanted to get &ldquo;lost&rdquo; in the recommendations like one gets lost clicking from link to link on Wikipedia.</li>
+</ol>
+
+<p>I organized the page as follows so that (1) all recommendations were visible and (2) one can click on any of the recommended models to be taken to that model&rsquo;s recommendations.</p>
+
+<p><a href="images/rec_screenshot.png"><img src="images/rec_screenshot.png" alt="main page" /></a></p>
+
+<h2 id="organization-of-the-app">Organization of the App</h2>
+
+<p>I decided to use Flask to build the web app because I already have some experience with it, and I&rsquo;m not trying to reinvent the wheel! The functionality itself is fairly simple. Other than an about page, there is only one page and one Flask <code>route</code> in the whole site.</p>
+
+<p>The functionality is relatively simple. When one initially goes to the page, there is a default list of models to select from, or one can input a link to a custom model. Once a model is selected, this sends a <code>GET</code> request to the main <code>route</code>. When the <code>route</code> receives this request, it must do two things:</p>
+
+<ol>
+<li>Grab data about the input model (name, url, and thumbnail).</li>
+<li>Find other recommended models and get their associated data.</li>
+</ol>
+
+<p>I populated a sqllite database with data about the Sketchfab models. I do not store the thumbnails directly; rather, I include a link to the thumbnail on Sketchfab&rsquo;s servers.</p>
+
+<p>For grabbing recommendations, I created a table with <em>precomputed</em> recommendations for each model. The recommendations are stored in the stupidest possible way as a string of comma-separated model ID&rsquo;s. I pull down the string, split on the commas, and place everything in a list. The code looks something like what follows.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python"># mid is an inputted model ID
+# type is the recommendation algorithm type (e.g. learning-to-rank)
+c = conn.cursor()
+sql = &quot;&quot;&quot;
+    SELECT
+      type,
+      recommended
+    FROM recommendations
+    WHERE
+      mid = '{}'
+&quot;&quot;&quot;.format(mid)
+c.execute(sql)
+results = c.fetchall()
+recommendations = []
+for r in results:
+    recommendations.append((r[0], [str(x) for x in r[1].split(',')]))
+recommendations = dict(out)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>I should note that the above code is easily subject to <a href="https://en.wikipedia.org/wiki/SQL_injection">SQL Injection</a>. Please don&rsquo;t write code like this on a production server!</p>
+
+<p>The main <code>route</code> functionality was actually the easiest part of the whole project. The hardest parts were getting things running remotely.</p>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<h2 id="deploying-to-aws">Deploying to AWS</h2>
+
+<p>This <a href="https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-14-04">post</a> from DigitalOcean was super helpful in getting things up and running. In fact, I almost followed that post verbatim.</p>
+
+<h3 id="ec2">EC2</h3>
+
+<p>For my purposes, I chose to use Amazon Web Services (AWS) instead of DigitalOcean for hosting the Rec-a-Sketch. This was imply because I had previous experience with AWS. The first step is to setup an EC2 instance which is virtual server. Rec-a-Sketch is lightweight, so I chose a t2.nano instance because it&rsquo;s the cheapest.</p>
+
+<p>One must create an Elastic IP address for the instance (which costs some money) as well as open ports 80 and 22. The ports can be opened by going to <code>Network &amp; Security -&gt; Security Groups</code> and creating a security group with the following ports:</p>
+
+<p><a href="images/security_groups.png"><img src="images/security_groups.png" alt="main page" /></a></p>
+
+<p>When the EC2 instance is created, you can download a pem file which allows you to ssh into the EC2 box. Save the pem file to your computer, and set the permissions accordingly:</p>
+
+<pre><code>chmod 400 pemfile.pem
+</code></pre>
+
+<p>I usually place the file in <code>~/.ssh/</code> and then add the file to my <code>~/.ssh/config</code> file for easy ssh-ing later on. The <code>config</code> file lets you setup quick aliases for ssh-ing (see <a href="http://nerderati.com/2011/03/17/simplify-your-life-with-an-ssh-config-file/">here</a> for more details).</p>
+
+<h3 id="the-stack">The Stack</h3>
+
+<p>Once you&rsquo;re able to ssh into the EC2 instance, it&rsquo;s time to setup the stack. The stack consists of the following:</p>
+
+<ol>
+<li>nginx | a web server which can handle incoming requests and redirect them to your Flask app.</li>
+<li>upstart | this makes sure that your Flask app stays up and running. If the app should die, upstart will start it back up again.</li>
+<li>gunicorn | a python WSGI HTTP server. I freely admit that I don&rsquo;t quite get the purpose of gunicorn. One clear benefit is that you can run multiple &ldquo;workers&rdquo; or copies of your Flask app which allows you to process multiple requests at once.</li>
+</ol>
+
+<p>The DigitalOcean posts walks through the setup of this stack quite nicely. Some modifications that I made are that I use <a href="https://conda.io/miniconda.html">miniconda</a> for managing the python libraries. In my upstart script, I have to make sure to add miniconda to the <code>PATH</code> environment variable. The upstart script is on github <a href="https://github.com/EthanRosenthal/rec-a-sketch/blob/master/flask_app/recasketch.conf">here</a>, and the nginx configuration is <a href="https://github.com/EthanRosenthal/rec-a-sketch/blob/master/flask_app/nginx.conf">here</a>.</p>
+
+<p>I did run into some issues setting up both the upstart service and nginx (when do things ever work the first time around?). Both services have log files which can be helpful for debugging. nginx had access and error logs in <code>/var/log/nginx/</code>, and each upstart service has its own log in <code>/var/log/upstart/</code>.</p>
+
+<h2 id="image-hosting">Image Hosting</h2>
+
+<p>I mentioned before that I do not actually host the Sketchfab model images on my server. I would have to pay for outgoing bandwidth, and this would add up quite fast (if people actually visit my website!). A simpler way to host images (though maybe morally dubious?) is to point to the url where Sketchfab hosts the image.</p>
+
+<p>The Sketchfab API easily lets you find the location of an image thumbnail. At first I would just ping the Sketchfab API for each request that came into my Flask app. This proved super slow because I would have to wait for the Sketchfab API response each time. I tried to solve this by running a big script to store all API responses in my own database.</p>
+
+<p>This worked for a bit, but then the image links started to break. I was confused for a bit, but maybe you can figure out what happened - here&rsquo;s an example image link:</p>
+
+<pre><code>https://dg5bepmjyhz9h.cloudfront.net/urls/a1194aa7be824b7da6accb1d0c788132
+/dist/thumbnails/93e331260a8142c6ab85d61f6a025476/200x200.jpeg
+</code></pre>
+
+<p>What&rsquo;s going on here? It turns out that Sketchfab smartly hosts their images using a Content Delivery Network, or CDN. CDNs are used to quickly serve files to users by hosting the files much closer to the user. There&rsquo;s no guarantee that the filename should stay the same at the CDN node, and it seems that they do not.</p>
+
+<p>I did not want to go back to pinging the Sketchfab API on every request, so I settled on a compromise. I setup a cron job to run every two days to grab the current image urls. The assumption here is that these urls will not change too quickly, and I am fine with small breakages in the meantime. The cron job script is located <a href="https://github.com/EthanRosenthal/rec-a-sketch/blob/master/flask_app/app/update.sh">here</a>.</p>
+
+<h2 id="closing-thoughts">Closing Thoughts</h2>
+
+<p>I had a lot of fun playing with the Sketchfab data and building Rec-a-Sketch. There a lot more algorithms that I would like to try out on the data, but I may like to venture into a different project for the time being. I would encourage you to try playing with the data and see what pops out. In the meantime, try getting &ldquo;lost&rdquo; in <a href="http://www.rec-a-sketch.science/">Rec-a-Sketch</a>!</p>
+
+</div>
+
+
+              </article>
+
+              <div class="pagination">
+                  
+                      <a href="http://ethanrosenthal.com/2016/12/05/recasketch-keras/">&laquo; Using Keras&#39; Pretrained Neural Networks for Visual Similarity Recommendations</a>
+                  
+                  
+                      <a href="http://ethanrosenthal.com/2017/03/20/analytical-numerical-universal/">From Analytical to Numerical to Universal Solutions &raquo;</a>
+                  
+              </div>
+          </section>
+          <br>
+          <section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view comments powered by <a href="http://disqus.com/?ref_noscript">Disqus</a>.</noscript>
+</section>
+
+      </section>
+
+    </main>
+    <footer class="row middle-xs center-xs">
+
+  
+  
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://github.com/EthanRosenthal">GitHub</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://linkedin.com/in/ethanrosenthal">LinkedIn</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://twitter.com/eprosenthal">Twitter</a></div>
+  
+
+  
+    <div class="col-xs-12">
+      
+        Copyright &copy; 2018 ethan rosenthal.
+      
+      
+        <a href="https://tomanistor.com" target="_blank">Theme developed by Toma Nistor</a>
+      
+    </div>
+  
+
+</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+  <script src="http://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
+
+
+  </body>
+</html>

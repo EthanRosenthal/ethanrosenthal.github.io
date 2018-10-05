@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+  
+
+  <title>
+    
+    
+        I&#39;m all about ML, but let&#39;s talk about OR | ethan rosenthal
+    
+  </title>
+
+  <meta name="title" content="I&#39;m all about ML, but let&#39;s talk about OR | ethan rosenthal">
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta name="generator" content="">
+  <base href="http://ethanrosenthal.com">
+
+  
+    <meta name="description" content="You&rsquo;ve studied machine learning, you&rsquo;re a dataframe master for massaging data, and you can easily pipe that data through a bunch of machine learning libraries.
+You go for a job interview at a SAAS company, you&rsquo;re given some raw data and labels and asked to predict churn, and come on - are these guys even trying? You generate the shit out of some features, you overfit the hell out of that multidimensional manifold just so you can back off and show off your knowledge of regularization, and then you put the icing on the cake by cross validating towards a better metric for the business problem than simple accuracy.">
+  
+
+  
+    <meta name="author" content="Ethan Rosenthal">
+  
+
+  
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@eprosenthal">
+    <meta name="twitter:creator" content="@eprosenthal">
+  
+
+  <meta property="og:title" content="I&#39;m all about ML, but let&#39;s talk about OR | ethan rosenthal">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://ethanrosenthal.com">
+
+  
+    <meta property="og:image" content="http://ethanrosenthal.com/images/profile_pic2.jpg">
+  
+
+  
+    <meta name="og:description" content="You&rsquo;ve studied machine learning, you&rsquo;re a dataframe master for massaging data, and you can easily pipe that data through a bunch of machine learning libraries.
+You go for a job interview at a SAAS company, you&rsquo;re given some raw data and labels and asked to predict churn, and come on - are these guys even trying? You generate the shit out of some features, you overfit the hell out of that multidimensional manifold just so you can back off and show off your knowledge of regularization, and then you put the icing on the cake by cross validating towards a better metric for the business problem than simple accuracy.">
+  
+
+  
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.ico">
+    <meta name="theme-color" content="#FFF">
+  
+
+  <link rel="canonical" href="http://ethanrosenthal.com/2016/07/20/lets-talk-or/">
+
+  
+
+  <link rel="stylesheet" href="http://ethanrosenthal.com/styles/main.css" type="text/css">
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.css" integrity="sha384-D+9gmBxUQogRLqvARvNLmA9hS2x//eK1FhVb9PiU86gmcrBrJAQT8okdJ4LMp2uv" crossorigin="anonymous">
+  
+
+  
+    <link href="http://ethanrosenthal.comcss/dataframe.css" rel="stylesheet" type="text/css">
+  
+
+  
+</head>
+
+  <body>
+    
+
+
+
+<nav class="row middle-xs center-xs">
+  <div class="col-xs-6 col-sm-1 logo">
+    <a href="http://ethanrosenthal.com#"><img src="http://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
+  </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#blog">Blog</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="https://physics.ethanrosenthal.com">Physics</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#about">About</a></h3>
+      </div>
+    
+  <div class="col-xs-6 col-sm-1 nav-toggle">
+      <a href="" class="nav-icon" onclick="return false"><img src="http://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="http://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
+  </div>
+</nav>
+
+<section class="nav-full row middle-xs center-xs">
+  <div class="col-xs-12">
+    <div class="row middle-xs center-xs">
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#blog">Blog</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="https://physics.ethanrosenthal.com">Physics</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#about">About</a></h1></div>
+      
+    </div>
+  </div>
+</section>
+
+    <main>
+
+      <section class="container">
+          <section class="content">
+              <h1> I&#39;m all about ML, but let&#39;s talk about OR </h1>
+
+              <div class="sub-header">
+                  July 20, 2016 · 10 minute read
+              </div>
+
+              <article class="entry-content">
+                  
+
+<div class="jupyter-cell markdown">
+
+
+<!-- PELICAN_BEGIN_SUMMARY -->
+
+<p>You&rsquo;ve studied machine learning, you&rsquo;re a dataframe master for massaging data, and you can easily pipe that data through a bunch of machine learning libraries.</p>
+
+<!-- PELICAN_END_SUMMARY -->
+
+<p>You go for a job interview at a SAAS company, you&rsquo;re given some raw data and labels and asked to predict churn, and come on - are these guys even trying? You generate the shit out of some features, you overfit the hell out of that multidimensional manifold just so you can back off and show off your knowledge of regularization, and then you put the icing on the cake by cross validating towards a better metric for the business problem than simple accuracy.</p>
+
+<p>Next.</p>
+
+<p>You roll up on an ecommerce company, and they trick you by basically giving you no features. Just users, products, and clicks? Ha! Nice try, but you know that&rsquo;s a classic recommender system. Boom! Out of nowhere, the ratings matrix is factorized, and you&rsquo;re serving up top-notch recommendations a-plenty.</p>
+
+<p>Next.</p>
+
+<p>Your uncle calls you and asks for a &ldquo;family favor&rdquo;. He manufactures artisinal dog collars in a Brooklyn warehouse and sells directly to the consumer. He doesn&rsquo;t know what the word churn means. He needs to decide how many of his 5 types of dog collars he should build next month with his limited supplies. Each collar in the catlog has a different profit margin, a different minimum build quantity, and there&rsquo;s only a 10K budget. Uncle asks you, &ldquo;How many of each collar should we build to maximize profit?&rdquo;</p>
+
+<p>Uhhhhh.</p>
+
+<p>You panic and try to apply ML to everything. <em>Hmmm, profit is a not a label but more a continuous variable. Okay, not a classification problem. Maybe this is a regression problem? Do I even want to predict the profit? Wait, what are my features? Shit, there&rsquo;s like no data&hellip;</em></p>
+
+<p>And so you write a program to enumerate all possible combinations of dog collar quantities along with the associated profit, and you find the maximum of the list of answers. Your uncle&rsquo;s happy, but you feel like an idiot because you know that this isn&rsquo;t scalable and god help you if you&rsquo;re ever asked this in an interview and there&rsquo;s just <em>got</em> to be a better way, right?</p>
+
+<p>Well, there&rsquo;s a better way.</p>
+
+<p>There&rsquo;s a better way! And I feel like nobody talks about it because the Data&rsquo;s not Big, you&rsquo;re not Learning Deep things, and there&rsquo;s nary a chatbot in sight. It&rsquo;s boring, old operations research which was something that I guess your university offered but nobody really knew what it meant. Full disclosure: I still don&rsquo;t really know what it means. I <em>do</em> know that the job of the data scientist is to bring value to the company, and having some operations and optimization in your toolbelt is quite valuable!</p>
+
+<h2 id="problem-formulation">Problem formulation</h2>
+
+<p>Let&rsquo;s try to solve Uncle&rsquo;s problem to get a feel for how we think about these things. I am not going to in any way cover how programs actually solve these problems (because I still don&rsquo;t know) but instead how one sets up this problem and asks a solver to solve this in Python.</p>
+
+<p>What was the original question? &ldquo;How many of each collar should we build to maximize profit?&rdquo; Maximize profit is the key phrase here. The way to think of optimization problems like this are in terms of the objective function and the constraints. We want to maximize profit, so our objective function will be the total profit from all collars produced (assuming all get sold). If we say that we have a variable, $c_{j}$, which says how many of collar $j$ we will produce, and $p_{j}$ is a constant denoting the profit that we will make on that collar, then our objective function is simply</p>
+
+<p>$$\sum\limits_{j}p_{j}c_{j}$$</p>
+
+<p>We want to maximize this function subject to specific constraints. One constraint is that we only have a 10K budget. The simplest method of solving these types of problems is to keep all constraints linear. If we have a known constant $w_{j}$ which is the cost in dollars of producing collar $j$, then the constraint could be expressed in mathematical form as</p>
+
+<p>$$\sum\limits_{j}w_{j}c_{j} \leq 10000$$</p>
+
+<p>Isn&rsquo;t this fun? All of these optimization problems consist of figuring out how to define your constraints in terms of <em>math</em> which is basically like the ultimate nerd-puzzle. The constraint on figuring out your constraints (see what I did there?) is that you should keep your constraints linear. This can get fairly tricky (read: fun).</p>
+
+<p>Alright, let&rsquo;s figure out the last two constraints, and then we can start coding this thing up. If $r_{j}$ is the minimimum run size for each collar, then this is relatively simple:</p>
+
+<p>$$\forall\, j,\, c_{j} \geq r_{j} $$</p>
+
+<p>By the way, that means &ldquo;for all $j$, $c_{j}$ is greater than or equal to $r_{j}$&ldquo;. We can lastly deal with the limited &ldquo;supplies&rdquo; for building collars by assuming that $m_{i}$ is the max quantity of supply $i$. If each collar $j$ requires $s_{ji}$ quantity of supply $i$, then the limited supplies constraint is written</p>
+
+<p>$$\forall\, i,\, \sum\limits_{j}s_{ij} \leq m_{i}$$</p>
+
+<h2 id="math-rightarrow-code">Math $\Rightarrow$ Code</h2>
+
+<p>At Birchbox, I programmed and solved a number of optimization problems, and I had the luxury to use <a href="http://www.gurobi.com/">Gurobi</a>, a state of the art mixed-integer programming solver with API&rsquo;s in many languages. What does that mean? That means you can build your problem in the language of your choice, the API&rsquo;s will translate your code into whatever Gurobi likes as input (C?), and then the Gurobi solver will solve the problem. Gurobi is most definitely not free, so I won&rsquo;t use it in this blog post on the off chance that you want to program along. Instead, we&rsquo;ll use <a href="https://www.gnu.org/software/glpk/">GLPK</a> as our solver and <a href="https://pythonhosted.org/PuLP/">pulp</a> as the Python API. I&rsquo;ve included instructions for installing both libraries on Linux at the bottom of this post.</p>
+
+<p>We&rsquo;ll start by importing our libraries and placing some made up data into two dataframes to get an idea of how the data&rsquo;s organized. The columns with material names are assumed to denote the &ldquo;quantity&rdquo; that the collar requires. For the sake of just trying to learn something, let&rsquo;s ignore what &ldquo;0.70 metal&rdquo; might mean and move along.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">from pulp import *
+import numpy as np
+import pandas as pd
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">names = ['leather', 'metal', 'canvas', 'cost', 'profit', 'min_run_size']
+collars = pd.DataFrame([(0.50, 0.25, 0.30, 26.00, 10.50, 30),
+                        (0.30, 0.70, 1.20, 29.00, 12.00, 40),
+                        (0.90, 0.60, 0.57, 22.00, 09.00, 25),
+                        (1.10, 0.45, 0.98, 26.50, 11.50, 60),
+                        (0.75, 0.95, 0.55, 20.00, 08.50, 50)],
+                      columns=names)
+collars.index.name = 'Dog collar type'
+collars
+</code></pre>
+
+</div>
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>leather</th>
+      <th>metal</th>
+      <th>canvas</th>
+      <th>cost</th>
+      <th>profit</th>
+      <th>min_run_size</th>
+    </tr>
+    <tr>
+      <th>Dog collar type</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.50</td>
+      <td>0.25</td>
+      <td>0.30</td>
+      <td>26.0</td>
+      <td>10.5</td>
+      <td>30</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.30</td>
+      <td>0.70</td>
+      <td>1.20</td>
+      <td>29.0</td>
+      <td>12.0</td>
+      <td>40</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.90</td>
+      <td>0.60</td>
+      <td>0.57</td>
+      <td>22.0</td>
+      <td>9.0</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1.10</td>
+      <td>0.45</td>
+      <td>0.98</td>
+      <td>26.5</td>
+      <td>11.5</td>
+      <td>60</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.75</td>
+      <td>0.95</td>
+      <td>0.55</td>
+      <td>20.0</td>
+      <td>8.5</td>
+      <td>50</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">quants = pd.DataFrame([400, 250, 300],
+                      index=['leather', 'metal', 'canvas'],
+                      columns=['max_quantity'])
+quants
+</code></pre>
+
+</div>
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>max_quantity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>leather</th>
+      <td>400</td>
+    </tr>
+    <tr>
+      <th>metal</th>
+      <td>250</td>
+    </tr>
+    <tr>
+      <th>canvas</th>
+      <td>300</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>We now define variables from the dataframes that match the math from above.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">p = collars.profit
+w = collars.cost
+r = collars.min_run_size
+m = quants.max_quantity
+s = collars[['leather', 'metal', 'canvas']]
+collar_index = range(collars.shape[0]) # j
+material_index = range(s.shape[1]) # i
+budget = 10000.0
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>The rest of the code follows exactly as we thought of the original math. We first think of the objective function. We know that we want to maximize profit, so we instantiate a maximization <code>LpProblem</code>. We then build the <em>variables</em> in our problem. I always confuse the term &ldquo;variable&rdquo; with any of the letters/symbols in our math problem, but we really mean a quantity that is variable (changes value, not the constants). The only variable is $c_{j}$, the number of collar $j$ to build. Using pulp, we can create $c_{j}$ variables with some pre-provided domain knowledge: We know that $c_{j}$ must be an integer. We also know that we cannot build more collars than our budget allows, so let&rsquo;s save our solver some time by passing an upper bound. Lastly, we add the objective function to the problem using the newly created variable. For taking sums in pulp, you should use the <code>lpSum</code> function.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">prob = LpProblem('Dog Collar Problem', LpMaximize)
+# Collar counts (the variable in our problem)
+c = []
+
+for j in collar_index:
+    max_count = np.floor(budget / w[j])
+    c.append(LpVariable('c_{}'.format(j),
+                        lowBound=0,
+                        upBound=max_count,
+                        cat='Integer'))
+    
+# For pulp, add objective function first
+prob += lpSum([i * j for i, j in zip(p, c)]), 'Total profit'
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>The constraints can now be added to the problem. The inequalities are written just as they would in math. A good rule of thumb is to use an explicit for loop any time we have a $\forall$ in our math.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python"># Budget constraint
+prob += lpSum([w[j] * c[j] for j in collar_index]) &lt;= budget, 'Budget'
+
+# Min run size constraint
+for j in collar_index:
+    prob += c[j] &gt;= r[j], 'MinBatchSize_{}'.format(j)
+
+# Max supplies quantity
+for i in material_index:
+    prob += lpSum([s.iloc[j, i] * c[j] for j in collar_index]) &lt;= m[i]
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>Our variables are created, our objective is defined, and all constraints have been added. What&rsquo;s left? Solve!</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">prob.solve()
+</code></pre>
+
+</div>
+
+
+<pre><code>1
+</code></pre>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>We returned a 1 which means that the problem solved. The pulp documentation provides some <a href="https://pythonhosted.org/PuLP/CaseStudies/index.html">examples</a> of how to inspect the solved model which I&rsquo;ve repurposed below</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">print(&quot;Status: {}&quot;.format(LpStatus[prob.status]))
+
+# Each of the variables is printed with it's resolved optimum value
+for v in prob.variables():
+    print(&quot;{} = {} &quot;.format(v.name, v.varValue))
+
+# The optimised objective function value is printed to the screen
+print('Total profit = ${:6.2f}'.format(value(prob.objective)))
+print('Total cost = ${:6.2f}'.format(np.sum(x * v.varValue for x, v in zip(w, prob.variables()))))
+</code></pre>
+
+</div>
+
+
+<pre><code>Status: Optimal
+c_0 = 68.0 
+c_1 = 40.0 
+c_2 = 25.0 
+c_3 = 151.0 
+c_4 = 126.0 
+Total profit = $4226.50
+Total cost = $9999.50
+</code></pre>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>Awesome! You now know how to solve simple optimization problems in Python. There are many more details that could be covered (constraints on the max of an array, if-else statement constraints, etc&hellip;), but hopefully this whet your appetite to play a little on your own.</p>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<h2 id="installation-notes">INSTALLATION NOTES</h2>
+
+<p>You will need to install GLPK and pulp The following instructions worked for me on Ubuntu 14.04 using Anaconda.</p>
+
+<h4 id="glpk">GLPK</h4>
+
+<pre><code class="language-bash">sudo apt-get install glpk-utils
+</code></pre>
+
+<h4 id="pulp">pulp</h4>
+
+<p>There is no default conda channel. I used the following channel which seemed to work fine. Note: this did not work with python 3.</p>
+
+<pre><code class="language-bash">conda install --channel https://conda.anaconda.org/timcera pulp
+</code></pre>
+
+<p>You can test the installation by opening python and running the following test</p>
+
+<pre><code class="language-python">import pulp
+pulp.pulpTestAll()
+</code></pre>
+
+<p>You should expect to fail some of the tests if you don&rsquo;t have CPLEX, COIN, Gurobi, etc&hellip; However, the GLPK tests should work. I saw the following printout (I only have GLPK installed on my home computer)</p>
+
+<pre><code>	 Testing zero subtraction
+	 Testing inconsistant lp solution
+	 Testing continuous LP solution
+	 Testing maximize continuous LP solution
+	 Testing unbounded continuous LP solution
+	 Testing Long Names
+	 Testing repeated Names
+	 Testing zero constraint
+	 Testing zero objective
+	 Testing LpVariable (not LpAffineExpression) objective
+	 Testing Long lines in LP
+	 Testing LpAffineExpression divide
+	 Testing MIP solution
+	 Testing MIP solution with floats in objective
+	 Testing MIP relaxation
+	 Testing feasibility problem (no objective)
+	 Testing an infeasible problem
+	 Testing an integer infeasible problem
+	 Testing column based modelling
+	 Testing dual variables and slacks reporting
+	 Testing fractional constraints
+	 Testing elastic constraints (no change)
+	 Testing elastic constraints (freebound)
+	 Testing elastic constraints (penalty unchanged)
+	 Testing elastic constraints (penalty unbounded)
+* Solver pulp.solvers.PULP_CBC_CMD passed.
+Solver pulp.solvers.CPLEX_DLL unavailable
+Solver pulp.solvers.CPLEX_CMD unavailable
+Solver pulp.solvers.CPLEX_PY unavailable
+Solver pulp.solvers.COIN_CMD unavailable
+Solver pulp.solvers.COINMP_DLL unavailable
+	 Testing zero subtraction
+	 Testing inconsistant lp solution
+	 Testing continuous LP solution
+	 Testing maximize continuous LP solution
+	 Testing unbounded continuous LP solution
+	 Testing Long Names
+	 Testing repeated Names
+	 Testing zero constraint
+	 Testing zero objective
+	 Testing LpVariable (not LpAffineExpression) objective
+	 Testing LpAffineExpression divide
+	 Testing MIP solution
+	 Testing MIP solution with floats in objective
+	 Testing MIP relaxation
+	 Testing feasibility problem (no objective)
+	 Testing an infeasible problem
+	 Testing an integer infeasible problem
+	 Testing column based modelling
+	 Testing fractional constraints
+	 Testing elastic constraints (no change)
+	 Testing elastic constraints (freebound)
+	 Testing elastic constraints (penalty unchanged)
+	 Testing elastic constraints (penalty unbounded)
+* Solver pulp.solvers.GLPK_CMD passed.
+Solver pulp.solvers.XPRESS unavailable
+Solver pulp.solvers.GUROBI unavailable
+Solver pulp.solvers.GUROBI_CMD unavailable
+Solver pulp.solvers.PYGLPK unavailable
+Solver pulp.solvers.YAPOSIB unavailable
+</code></pre>
+
+</div>
+
+
+              </article>
+
+              <div class="pagination">
+                  
+                      <a href="http://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/">&laquo; Explicit Matrix Factorization: ALS, SGD, and All That Jazz</a>
+                  
+                  
+                      <a href="http://ethanrosenthal.com/2016/08/30/towards-optimal-personalization/">Towards optimal personalization: synthesisizing machine learning and operations research &raquo;</a>
+                  
+              </div>
+          </section>
+          <br>
+          <section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view comments powered by <a href="http://disqus.com/?ref_noscript">Disqus</a>.</noscript>
+</section>
+
+      </section>
+
+    </main>
+    <footer class="row middle-xs center-xs">
+
+  
+  
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://github.com/EthanRosenthal">GitHub</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://linkedin.com/in/ethanrosenthal">LinkedIn</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://twitter.com/eprosenthal">Twitter</a></div>
+  
+
+  
+    <div class="col-xs-12">
+      
+        Copyright &copy; 2018 ethan rosenthal.
+      
+      
+        <a href="https://tomanistor.com" target="_blank">Theme developed by Toma Nistor</a>
+      
+    </div>
+  
+
+</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.js" integrity="sha384-483A6DwYfKeDa0Q52fJmxFXkcPCFfnXMoXblOkJ4JcA8zATN6Tm78UNL72AKk+0O" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/contrib/auto-render.min.js" integrity="sha384-yACMu8JWxKzSp/C1YV86pzGiQ/l1YUfE8oPuahJQxzehAjEt2GiQuy/BIvl9KyeF" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function(){
+        	renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "\\\\begin{equation*}", right: "\\\\end{equation*}", display: true},
+                    {left: "$$", right: "$$", display: true},
+                    {left: "\\\[", right: "\\\]", display: true},
+                    {left: "$", right: "$", display: false},
+                    {left: "\\\(", right: "\\\)", display: false}
+                ]
+            });
+        });
+    </script>
+
+
+  <script src="http://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
+
+
+  </body>
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+  
+
+  <title>
+    
+    
+        Festival Chatter (Part 2) - Evaluating Band Popularity from Bonnaroo Tweets | ethan rosenthal
+    
+  </title>
+
+  <meta name="title" content="Festival Chatter (Part 2) - Evaluating Band Popularity from Bonnaroo Tweets | ethan rosenthal">
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta name="generator" content="">
+  <base href="http://ethanrosenthal.com">
+
+  
+    <meta name="description" content="In my previous post, I wrote about how I collected tweets about the Bonnaroo Music and Arts Festival during the entirety of the festival. There are a wide range of questions that could be answered by this dataset, like
+ Do people spell worse as they become more intoxicated throughout the night? Does text sentiment decline as people go more days without bathing? Who in the world tweets from a laptop during a music festival?">
+  
+
+  
+    <meta name="author" content="Ethan Rosenthal">
+  
+
+  
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@eprosenthal">
+    <meta name="twitter:creator" content="@eprosenthal">
+  
+
+  <meta property="og:title" content="Festival Chatter (Part 2) - Evaluating Band Popularity from Bonnaroo Tweets | ethan rosenthal">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://ethanrosenthal.com">
+
+  
+    <meta property="og:image" content="http://ethanrosenthal.com/images/profile_pic2.jpg">
+  
+
+  
+    <meta name="og:description" content="In my previous post, I wrote about how I collected tweets about the Bonnaroo Music and Arts Festival during the entirety of the festival. There are a wide range of questions that could be answered by this dataset, like
+ Do people spell worse as they become more intoxicated throughout the night? Does text sentiment decline as people go more days without bathing? Who in the world tweets from a laptop during a music festival?">
+  
+
+  
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.ico">
+    <meta name="theme-color" content="#FFF">
+  
+
+  <link rel="canonical" href="http://ethanrosenthal.com/2014/09/09/festival-chatter-part2/">
+
+  
+
+  <link rel="stylesheet" href="http://ethanrosenthal.com/styles/main.css" type="text/css">
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+
+  
+
+  
+
+  
+</head>
+
+  <body>
+    
+
+
+
+<nav class="row middle-xs center-xs">
+  <div class="col-xs-6 col-sm-1 logo">
+    <a href="http://ethanrosenthal.com#"><img src="http://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
+  </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#blog">Blog</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="https://physics.ethanrosenthal.com">Physics</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#about">About</a></h3>
+      </div>
+    
+  <div class="col-xs-6 col-sm-1 nav-toggle">
+      <a href="" class="nav-icon" onclick="return false"><img src="http://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="http://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
+  </div>
+</nav>
+
+<section class="nav-full row middle-xs center-xs">
+  <div class="col-xs-12">
+    <div class="row middle-xs center-xs">
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#blog">Blog</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="https://physics.ethanrosenthal.com">Physics</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#about">About</a></h1></div>
+      
+    </div>
+  </div>
+</section>
+
+    <main>
+
+      <section class="container">
+          <section class="content">
+              <h1> Festival Chatter (Part 2) - Evaluating Band Popularity from Bonnaroo Tweets </h1>
+
+              <div class="sub-header">
+                  September 9, 2014 · 9 minute read
+              </div>
+
+              <article class="entry-content">
+                  
+
+<p>In my previous <a href="http://ethanrosenthal.com/2014/08/31/festival-chatter-part1/">post</a>, I wrote about how I collected tweets about the Bonnaroo Music and Arts Festival during the entirety of the festival. There are a wide range of questions that could be answered by this dataset, like</p>
+
+<ul>
+<li>Do people spell worse as they become more intoxicated throughout the night?</li>
+<li>Does text <a href="http://en.wikipedia.org/wiki/Sentiment_analysis">sentiment</a> decline as people go more days without bathing?</li>
+<li>Who in the world tweets from a laptop during a music festival?</li>
+</ul>
+
+<p>I would honestly love to answer the above questions (and plan to), but I will focus on the most obvious question for this post:</p>
+
+<p><strong>Which band was most <a href="http://youtu.be/RNc45FTenhg">popular</a>?</strong></p>
+
+<p>And while this question seems simple to answer, there are many reasons this blog post is so long. To start, we do not even have a decent definition of the question!</p>
+
+<p>What does it mean for an artist to be the most popular as measured by tweets? For now, let&rsquo;s work off of the oldest rule of PR: &ldquo;Any publicity is good publicity&rdquo;. In that case, we shall rank band popularity simply by the number of tweets that mention each artist. Let&rsquo;s try to do this and see what happens.</p>
+
+<h2 id="of-pythons-and-pandas">Of Pythons and Pandas</h2>
+
+<p>From the previous post, I have my dataset of Bonnaroo tweets sitting in a MongoDB database. I would like to get these tweets out of the database and into <a href="http://ipython.org/">IPython</a>, a software package for interactive computing in Python. I exported the database as a giant JSON file and then loaded it into IPython with a list comprehension.</p>
+
+<p>The next step is to get the JSON record into <a href="http://pandas.pydata.org/">pandas</a>, a Python library used mainly for manipulating tabular data. The main object for dealing with tabular data, the DataFrame, nicely reads in such a JSON record.</p>
+
+<pre><code class="language-python">import json
+import pandas as pd
+from pandas import DataFrame, Series
+
+path = 'tweetCollection.json'
+record = [json.loads(line) for line in open(path)]
+df = DataFrame(record)
+</code></pre>
+
+<p>If I type <code>df.count()</code> I see that, sure enough, all 157,600 tweets are present and that 8,656 of them contain location data.</p>
+
+<pre><code>_id           157600
+created_at    157600
+geo             8656
+source        157600
+text          157600
+dtype: int64
+</code></pre>
+
+<p>While watching the tweets stream in, I noticed that there are a lot of retweets. To me, these do not seem as &ldquo;organic&rdquo; as a bona-fide, original tweet. People and software can spam twitter all they want with retweets, but it is more difficult to spam with original tweets. So, I think a more robust measure of band popularity is <em>unique</em> tweets. Pandas allows us to easily investigate this:</p>
+
+<pre><code class="language-python">df['text'].describe()
+</code></pre>
+
+<pre><code>count                                                157600
+unique                                               107773
+top       RT @502michael502: Islam The Religion Of Truth...
+freq                                                   1938
+Name: text, dtype: object
+</code></pre>
+
+<p>Of the 157,600 original tweets, only about two-thirds of them are unique tweets. And wait, what&rsquo;s that most popular tweet that is repeated 1,938 times?</p>
+
+<pre><code class="language-python">print df['text'].describe()['top']
+</code></pre>
+
+<pre><code>RT @502michael502: Islam The Religion Of Truth
+
+http://t.co/BO7Sjw6pSl
+
+#FathersDay #AFLDonsDees  #Bonnaroo #Brasil2014 #WorldCup #Jewish #…
+</code></pre>
+
+<p>Wow. Sure enough, if you go to the twitter page for <a href="https://twitter.com/502michael502">@502michael502</a>, you will see that random pro-Islam messages are tweeted and retweeted thousands of times with an assorted collection of hashtags containing trending and religious words. I guess Bonnaroo was popular enough to make it onto @502michael502&rsquo;s trending hashtags! And here I thought he was just a big jam band fan.</p>
+
+<p>Ok, now we can try to remove retweets. We start by grabbing only unique tweets.</p>
+
+<pre><code class="language-python"># Retain only unique text-unique tweets
+uniques = df.drop_duplicates(inplace=False, cols='text')
+
+# I don't know how to make .startswith() case insensitve,
+# so check both cases:
+organics = uniques[ uniques['text'].str.startswith('RT')==False ]
+organics = organics[ organics['text'].str.startswith('rt')==False ]
+
+# In case RT was placed further in the text than the beginning.
+# Include spaces around ' RT ' to prevent grabbing words like start
+organics = organics[ organics['text'].str.contains(' RT ', case=False)==False ]
+
+print organics.count()
+</code></pre>
+
+<pre><code>_id           93311
+created_at    93311
+geo            8537
+source        93311
+text          93311
+dtype: int64
+</code></pre>
+
+<p>There we go: we have gone from 157,600 total tweets to 93,311 &ldquo;organic&rdquo; tweets. There is still more work that we could do to get more organic tweets. For example, I would argue that news media sources tweeting about artists at Bonnaroo are not a good measure of band popularity. Such tweets are more difficult to detect, though. One method could be to look at the source of the tweet - maybe tweets from cell phones are more likely to be individuals than media organizations? I will save this for another post because we still have a lot of work to do!</p>
+
+<h2 id="most-beautifulsoup-in-the-room-http-youtu-be-5yixpnphaqe">Most BeautifulSoup in the <a href="http://youtu.be/5YIxpNPhAQE">Room</a></h2>
+
+<p>Now that I have grouped together all of the tweets that we care to investigate, we must search for mentions of each Bonnaroo artist. But I am lazy. There are <em>189</em> different artists performing at Bonnaroo, and by no means do I feel like typing them all out.</p>
+
+<p>Enter <a href="http://www.crummy.com/software/BeautifulSoup/">BeautifulSoup</a>, a Python library for scraping websites. All I have to do is check out the band lineup on the Bonnaroo website, figure out which <code>div</code> elements correspond to the listed bands, and <em>BeautifulSoup</em> will grab the contents.</p>
+
+<pre><code class="language-python">import urllib2
+from BeautifulSoup import BeautifulSoup
+
+url='http://lineup.bonnaroo.com/'
+ufile = urllib2.urlopen(url)
+soup = BeautifulSoup(ufile)
+bandList = soup.find('div',{'class':'ds-lineup ds-player'}).findAll('a')
+fout = open('bonnarooBandList.txt','w')
+for row in bandList:
+    band=row.renderContents()
+    fout.write(band + '\n')
+
+fout.close()
+</code></pre>
+
+<h2 id="with-a-little-help-from-my-api-friends">With a Little Help from my (API) Friends</h2>
+
+<p>When I wrote the above script, I thought I was done. Later on, I thought about the fact that people do not always call bands by their full name. For example, the Red Hot Chili Peppers are often abbreviated RHCP. I was amazed when I found that <a href="https://musicbrainz.org/">MusicBrainz</a>, an online music encyclopedia, not only keeps track of bands&rsquo; aliases and mispellings, but MusicBrainz actually has an API for accessing this information. Even better, somebody created a <a href="http://python-musicbrainzngs.readthedocs.org/en/latest/">Python wrapper</a> for the API.</p>
+
+<p>I also had to perform some &ldquo;scrubbing&rdquo; of the aliases that are retrieved from the MusicBrainz API. I consider that a band is &ldquo;mentioned&rdquo; in a tweet if all words in any of the band&rsquo;s aliases are present in the tweet text. For example, a match for both &ldquo;arctic&rdquo; and &ldquo;monkeys&rdquo; in the text would be a mention of &ldquo;Arctic Monkeys&rdquo;. However, I do not want to miss a mention of &ldquo;The Flaming Lips&rdquo; because &ldquo;the&rdquo; is not included.</p>
+
+<p>I ameliorated this issue by using <a href="http://www.nltk.org/">nltk</a>, a Natural Language Processing library. The library contains a list of English stopwords (common words like &ldquo;the&rdquo;) which I used as a filter. <strong>Note</strong>: This may be an issue for bands like &ldquo;The Head and the Heart&rdquo; where the filter would leave behind &ldquo;head&rdquo; and &ldquo;heart&rdquo;. Both these words could easily be in a tweet and not relate to the band.</p>
+
+<p>The code below shows how I used the public API&rsquo;s and <em>nltk</em> in order to get searchable aliases.</p>
+
+<pre><code class="language-python">import musicbrainzngs as mbrainz
+import json
+import string
+import re
+import nltk
+from nltk.corpus import stopwords
+
+
+mbrainz.auth(username,password) # Use a username and password
+mbrainz.set_useragent(program_version,email_address) # Include name
+                                # of your program and email address
+
+# To be used for removing punctuation
+regex = re.compile('[%s]' % re.escape(string.punctuation))
+
+################################
+def clean_aliases(alias, regex):
+    &quot;&quot;&quot;
+    This function converts each alias to lowercase, removes
+    punctuation, and removes stop words. The output is a
+    list containing the remaining words.
+    &quot;&quot;&quot;
+    alias = alias.lower().replace(' &amp;amp;', '') # Remove ampersands
+    alias = regex.sub('', alias) # Remove punctuation
+    alias_words = \
+    [w for w in alias.split() if w not in stopwords.words('english')]
+    return alias_words
+################################
+
+with open('bonnarooBandList.txt','r') as fin:
+    with open('bonnarooAliasList.json','w') as fout:
+        aliasDict={} # Initialize alias dictionary
+        for band in fin:
+            band = band.rstrip('\n')
+            # Remove ampersands
+            band_query = band.lower().replace(' &amp;amp;', '')
+            # Remove punctuation
+            band_query = regex.sub('', band_query)
+            # Only grab first result
+            result = \
+                mbrainz.search_artists(artist=band_query, limit=1)
+            # Remove stopwords
+            band_query = clean_aliases(band_query, regex)
+            #Initialize with stripped version of name
+            # listed on Bonnaroo website
+            aliasList = [band_query]
+            try:
+                for alias in result['artist-list'][0]['alias-list']:
+                    alias = clean_aliases(alias['alias'], regex)
+                    aliasList.append(alias) # Build alias List
+            except: # Some artists do not return aliases
+                pass # So don't do anything!
+            aliasDict[band] = aliasList
+        json.dump(aliasDict,fout)
+    fout.close()
+fin.close()
+</code></pre>
+
+<h2 id="the-final-histogram">The Final Histogram</h2>
+
+<p>Ok, so we now have a dictionary of <em>easily searchable</em> aliases for all artists that performed at Bonnaroo. All we have to do now is go through each tweet and see if any of the aliases for any of the artists are mentioned. We can then build a histogram of &ldquo;mentions&rdquo; for each artist by adding up all of the mentions in all of the tweets for a given artist.</p>
+
+<p>In the code below, I do just this. By running the function at the bottom, <code>get_bandPop</code>, we get a <em>pandas</em> Series in return that contains each artist and the number of times they were mentioned in all of the tweets.</p>
+
+<pre><code class="language-python"># To be used for removing punctuation
+regex = re.compile('[%s]' % re.escape(string.punctuation))
+
+def clean_sentence(sentence):
+    &quot;&quot;&quot;
+    Converts each sentence to lowercase and removes
+    punctuation.
+    &quot;&quot;&quot;
+    sentence = sentence.lower().replace(' &amp;amp;', '') # Remove ampersands
+    sentence = regex.sub('', sentence) # Remove punctuation
+    # sentence_words = [w for w in sentence.split() if w not in stopwords.words('english')]
+    return sentence
+
+def find_mention(sentence, phrase_list):
+    &quot;&quot;&quot;
+    Takes a phase_list, which is a list of phrases where
+    each phrase corresponds to a list of the words in the phrase, and
+    checks to see whether all the words of any of the phrases are
+    present in &quot;sentence&quot;.
+    &quot;&quot;&quot;
+    for words in phrase_list:
+        words = set(words)
+        if words.issubset(sentence):
+            return True
+    return False # None of the word lists were subsets
+
+def check_each_alias(sentence, alias_dict):
+    &quot;&quot;&quot;
+    Checks to see whether any of the aliases for
+    each band mentioned in alias_dict are mentioned
+    in &quot;sentence&quot;.
+
+    band_bool is a dictionary that contains all band
+    names as keys and True or False as values corresponding
+    to whether or not the band was mentioned in the sentence.
+    &quot;&quot;&quot;
+    band_bool={}
+    sentence = set(clean_sentence(sentence).split())
+    for k, v in alias_dict.iteritems():
+        band_bool[k] = find_mention(sentence, v)
+    return pd.Series(band_bool)
+
+def build_apply_fun(alias_dict):
+    &quot;&quot;&quot;
+    Turn check_each_alias into an anonymous function.
+    &quot;&quot;&quot;
+    apply_fun = lambda x : check_each_alias(x, alias_dict)
+    return apply_fun
+
+def get_bandPop(df, alias_dict):
+    &quot;&quot;&quot;
+    For tweet DataFrame input &quot;df&quot;, build histogram of of mentions
+    for each band in alias_dict.
+    &quot;&quot;&quot;
+    bandPop = df['text'].apply(build_apply_fun(alias_dict), alias_dict)
+    bandPop = bandPop.sum(axis=0)
+    bandPop.sort(ascending=False)
+    return bandPop
+
+</code></pre>
+
+<p>And now, finally, all we have to do is type <code>bandPop[:10].plot(kind='bar')</code> (and maybe fiddle around in <em>matplotlib</em> for an hour adjusting properties of the figure) and we get a histogram of mentions for the top ten most popular bands at Bonnaroo:</p>
+
+<p><img src="images/bandPop_top10.png" alt="Top Ten Bands" /></p>
+
+<p>And of course it&rsquo;s Kanye! Is anybody surprised?</p>
+
+<p>Wow, that was a lot of work for one, measly histogram! However, we now have a bunch of data analytical machinery that we can use to delve deeper into this dataset. In my <a href="http://ethanrosenthal.com/2014/10/06/festival-chatter-part3/">next post</a>, I&rsquo;ll do just that!</p>
+
+              </article>
+
+              <div class="pagination">
+                  
+                      <a href="http://ethanrosenthal.com/2014/08/31/festival-chatter-part1/">&laquo; Festival Chatter (Part 1) - Collecting Bonnaroo Tweets from the Streaming Twitter API</a>
+                  
+                  
+                      <a href="http://ethanrosenthal.com/2014/10/06/festival-chatter-part3/">Festival Chatter (Part 3) - Bonnaroo Analysis in the Fourth Dimension &raquo;</a>
+                  
+              </div>
+          </section>
+          <br>
+          <section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view comments powered by <a href="http://disqus.com/?ref_noscript">Disqus</a>.</noscript>
+</section>
+
+      </section>
+
+    </main>
+    <footer class="row middle-xs center-xs">
+
+  
+  
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://github.com/EthanRosenthal">GitHub</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://linkedin.com/in/ethanrosenthal">LinkedIn</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://twitter.com/eprosenthal">Twitter</a></div>
+  
+
+  
+    <div class="col-xs-12">
+      
+        Copyright &copy; 2018 ethan rosenthal.
+      
+      
+        <a href="https://tomanistor.com" target="_blank">Theme developed by Toma Nistor</a>
+      
+    </div>
+  
+
+</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+  <script src="http://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
+
+
+  </body>
+</html>

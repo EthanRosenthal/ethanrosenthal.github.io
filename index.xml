@@ -17,9 +17,223 @@
       <pubDate>Tue, 04 Sep 2018 23:38:57 -0400</pubDate>
       
       <guid>http://ethanrosenthal.com/about/</guid>
-      <description>My name is Ethan Rosenthal, and I write a blog about data science called Data Piques.
-I am a Machine Learning Engineer at Dia&amp;amp;Co. I lead a team of scientists, engineers, and analysts focused on Styling and Customer Growth algorithms. I got my start in data science working at Birchbox. Prior to that, I earned a PhD in Physics from Columbia University where I studied unconvential superconductors.
-I would love to hear from you.</description>
+      <description>My name is Ethan Rosenthal, and I am a Machine Learning Engineer at Dia&amp;amp;Co. I lead a team of scientists, engineers, and analysts focused on Styling and Customer Growth algorithms. I got my start in data science working at Birchbox. Prior to that, I earned a PhD in Physics from Columbia University where I studied unconvential superconductors.
+I would love to hear from you. Feel free to contact me at ethanrosenthal(at)gmail.</description>
+    </item>
+    
+    <item>
+      <title>Quick and Dirty Serverless Integer Programming</title>
+      <link>http://ethanrosenthal.com/2018/08/06/serverless-integer-programming/</link>
+      <pubDate>Mon, 06 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2018/08/06/serverless-integer-programming/</guid>
+      <description>We all know that Python has risen above its humble beginnings such that it now powers billion dollar companies. Let&amp;rsquo;s not forget Python&amp;rsquo;s roots, though! It&amp;rsquo;s still an excellent language for running quick and dirty scripts that automate some task. While this works fine for automating my own tasks because I know how to navigate the command line, it&amp;rsquo;s a bit much to ask a layperson to somehow install python and dependencies, open Terminal on a Mac (god help you if they have a Windows computer), type a random string of characters, and hit enter.</description>
+    </item>
+    
+    <item>
+      <title>Time Series for scikit-learn People (Part II): Autoregressive Forecasting Pipelines</title>
+      <link>http://ethanrosenthal.com/2018/03/22/time-series-for-scikit-learn-people-part2/</link>
+      <pubDate>Thu, 22 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2018/03/22/time-series-for-scikit-learn-people-part2/</guid>
+      <description>In this post, I will walk through how to use my new library skits for building scikit-learn pipelines to fit, predict, and forecast time series data. We will pick up from the last post where we talked about how to turn a one-dimensional time series array into a design matrix that works with the standard scikit-learn API. At the end of that post, I mentioned that we had started building an ARIMA model.</description>
+    </item>
+    
+    <item>
+      <title>Time Series for scikit-learn People (Part I): Where&#39;s the X Matrix?</title>
+      <link>http://ethanrosenthal.com/2018/01/28/time-series-for-scikit-learn-people-part1/</link>
+      <pubDate>Sun, 28 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2018/01/28/time-series-for-scikit-learn-people-part1/</guid>
+      <description>When I first started to learn about machine learning, specifically supervised learning, I eventually felt comfortable with taking some input $\mathbf{X}$, and determining a function $f(\mathbf{X})$ that best maps $\mathbf{X}$ to some known output value $y$. Separately, I dove a little into time series analysis and thought of this as a completely different paradigm. In time series, we don&amp;rsquo;t think of things in terms of features or inputs; rather, we have the time series $y$, and $y$ alone, and we look at previous values of $y$ to predict future values of $y$.</description>
+    </item>
+    
+    <item>
+      <title>Matrix Factorization in PyTorch</title>
+      <link>http://ethanrosenthal.com/2017/06/20/matrix-factorization-in-pytorch/</link>
+      <pubDate>Tue, 20 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2017/06/20/matrix-factorization-in-pytorch/</guid>
+      <description>Hey, remember when I wrote those ungodly long posts about matrix factorization chock-full of gory math? Good news! You can forget it all. We have now entered the Era of Deep Learning, and automatic differentiation shall be our guiding light.
+Less facetiously, I have finally spent some time checking out these new-fangled deep learning frameworks, and damn if I am not excited.
+In this post, I will show you how to use PyTorch to bypass the mess of code from my old post on Explicit Matrix Factorization and instead implement a model that will converge faster in fewer lines of code.</description>
+    </item>
+    
+    <item>
+      <title>From Analytical to Numerical to Universal Solutions</title>
+      <link>http://ethanrosenthal.com/2017/03/20/analytical-numerical-universal/</link>
+      <pubDate>Mon, 20 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2017/03/20/analytical-numerical-universal/</guid>
+      <description>I&amp;rsquo;ve been making my way through the recently released Deep Learning textbook (which is absolutely excellent), and I came upon the section on Universal Approximation Properties. The Universal Approximation Theorem (UAT) essentially proves that neural networks are capable of approximating any continuous function (subject to some constraints and with upper bounds on compute).
+Meanwhile, I have been thinking about the modern successes of deep learning and how many computer vision researchers resisted the movement away from hand-defined features towards deep, uninterpretable neural networks.</description>
+    </item>
+    
+    <item>
+      <title>Rec-a-Sketch: a Flask App for Interactive Sketchfab Recommendations</title>
+      <link>http://ethanrosenthal.com/2017/02/05/rec-a-sketch/</link>
+      <pubDate>Sun, 05 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2017/02/05/rec-a-sketch/</guid>
+      <description>After the long series of previous posts describing various recommendation algorithms using Sketchfab data, I decided to build a website called Rec-a-Sketch which visualizes the different algorithms&amp;rsquo; recommendations. In this post, I&amp;rsquo;ll describe the process of getting this website up and running on AWS with nginx and gunicorn.
+Goal The goal of the website was two-fold.
+ I wanted to view the different algorithm&amp;rsquo;s recommendations side-by-side for comparison. I wanted to get &amp;ldquo;lost&amp;rdquo; in the recommendations like one gets lost clicking from link to link on Wikipedia.</description>
+    </item>
+    
+    <item>
+      <title>Using Keras&#39; Pretrained Neural Networks for Visual Similarity Recommendations</title>
+      <link>http://ethanrosenthal.com/2016/12/05/recasketch-keras/</link>
+      <pubDate>Mon, 05 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2016/12/05/recasketch-keras/</guid>
+      <description>To close out our series on building recommendation models using Sketchfab data, I will venture far from the previous posts&amp;rsquo; factorization-based methods and instead explore an unsupervised, deep learning-based model. You&amp;rsquo;ll find that the implementation is fairly simple with remarkably promising results which is almost a smack in the face to all of that effort put in earlier.
+We are going to build a model-to-model recommender using thumbnail images of 3D Sketchfab models as our input and the visual similarity between models as our recommendation score.</description>
+    </item>
+    
+    <item>
+      <title>Learning to Rank Sketchfab Models with LightFM</title>
+      <link>http://ethanrosenthal.com/2016/11/07/implicit-mf-part-2/</link>
+      <pubDate>Mon, 07 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2016/11/07/implicit-mf-part-2/</guid>
+      <description>In this post we&amp;rsquo;re going to do a bunch of cool things following up on the last post introducing implicit matrix factorization. We&amp;rsquo;re going to explore Learning to Rank, a different method for implicit matrix factorization, and then use the library LightFM to incorporate side information into our recommender. Next, we&amp;rsquo;ll use scikit-optimize to be smarter than grid search for cross validating hyperparameters. Lastly, we&amp;rsquo;ll see that we can move beyond simple user-to-item and item-to-item recommendations now that we have side information embedded in the same space as our users and items.</description>
+    </item>
+    
+    <item>
+      <title>Intro to Implicit Matrix Factorization: Classic ALS with Sketchfab Models</title>
+      <link>http://ethanrosenthal.com/2016/10/19/implicit-mf-part-1/</link>
+      <pubDate>Wed, 19 Oct 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2016/10/19/implicit-mf-part-1/</guid>
+      <description>Last post I described how I collected implicit feedback data from the website Sketchfab. I then claimed I would write about how to actually build a recommendation system with this data. Well, here we are! Let&amp;rsquo;s build.
+I think the best place to start when looking into implicit feedback recommenders is with the model outlined in the classic paper &amp;ldquo;Collaborative Filtering for Implicit Feedback Datasets&amp;rdquo; by Koren et.al. (warning: pdf link).</description>
+    </item>
+    
+    <item>
+      <title>Likes Out! Guerilla Dataset!</title>
+      <link>http://ethanrosenthal.com/2016/10/09/likes-out-guerilla-dataset/</link>
+      <pubDate>Sun, 09 Oct 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2016/10/09/likes-out-guerilla-dataset/</guid>
+      <description>&amp;ndash; Zack de la Rocha
+tl;dr -&amp;gt; I collected an implicit feedback dataset along with side-information about the items. This dataset contains around 62,000 users and 28,000 items. All the data lives here inside of this repo. Enjoy!
+In a previous post, I wrote about how to use matrix factorization and explicit feedback data in order to build recommendation systems. This is data where a user has given a clear preference for an item such as a star rating for an Amazon product or a numerical rating for a movie like in the MovieLens data.</description>
+    </item>
+    
+    <item>
+      <title>Towards optimal personalization: synthesisizing machine learning and operations research</title>
+      <link>http://ethanrosenthal.com/2016/08/30/towards-optimal-personalization/</link>
+      <pubDate>Tue, 30 Aug 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2016/08/30/towards-optimal-personalization/</guid>
+      <description>Last post I talked about how data scientists probably ought to spend some time talking about optimization (but not too much time - I need topics for my blog posts!). While I provided a basic optimization example in that post, that may have not been so interesting, and there definitely wasn&amp;rsquo;t any machine learning involved.
+Right now, I think that the most exciting industrial applications of optimization are those that synthesize machine learning and optimization in order to obtain optimal personalization at scale.</description>
+    </item>
+    
+    <item>
+      <title>I&#39;m all about ML, but let&#39;s talk about OR</title>
+      <link>http://ethanrosenthal.com/2016/07/20/lets-talk-or/</link>
+      <pubDate>Wed, 20 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2016/07/20/lets-talk-or/</guid>
+      <description>You&amp;rsquo;ve studied machine learning, you&amp;rsquo;re a dataframe master for massaging data, and you can easily pipe that data through a bunch of machine learning libraries.
+You go for a job interview at a SAAS company, you&amp;rsquo;re given some raw data and labels and asked to predict churn, and come on - are these guys even trying? You generate the shit out of some features, you overfit the hell out of that multidimensional manifold just so you can back off and show off your knowledge of regularization, and then you put the icing on the cake by cross validating towards a better metric for the business problem than simple accuracy.</description>
+    </item>
+    
+    <item>
+      <title>Explicit Matrix Factorization: ALS, SGD, and All That Jazz</title>
+      <link>http://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/</link>
+      <pubDate>Sat, 09 Jan 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/</guid>
+      <description>In my last post, I described user- and item-based collaborative filtering which are some of the simplest recommendation algorithms. For someone who is used to conventional machine learning classification and regression algorithms, collaborative filtering may have felt a bit off. To me, machine learning almost always deals with some function which we are trying to maximize or minimize. In simple linear regression, we minimize the mean squared distance between our predictions and the true values.</description>
+    </item>
+    
+    <item>
+      <title>Intro to Recommender Systems: Collaborative Filtering</title>
+      <link>http://ethanrosenthal.com/2015/11/02/intro-to-collaborative-filtering/</link>
+      <pubDate>Mon, 02 Nov 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2015/11/02/intro-to-collaborative-filtering/</guid>
+      <description>I&amp;rsquo;ve written before about how much I enjoyed Andrew Ng&amp;rsquo;s Coursera Machine Learning course. However, I also mentioned that I thought the course to be lacking a bit in the area of recommender systems. After learning basic models for regression and classification, recommmender systems likely complete the triumvirate of machine learning pillars for data science.
+Working at an ecommmerce company, I think a lot about recommender systems and would like to provide an introduction to basic recommendation models.</description>
+    </item>
+    
+    <item>
+      <title>Yet Another PhD to Data Science Post (Part III)</title>
+      <link>http://ethanrosenthal.com/2015/10/06/interviews-to-job/</link>
+      <pubDate>Tue, 06 Oct 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2015/10/06/interviews-to-job/</guid>
+      <description>This is the final part in my series on going from PhD to Data Science (parts I and II). As previously mentioned, while I was demoing my Insight project at companies, I also spent a good bit of time studying for interviews. The technical areas of study for interviews can be largely grouped as
+ Computer Science (CS) Machine Learning (ML) Statistics SQL  I&amp;rsquo;ll first review some resources for these areas of study then talk about interviews.</description>
+    </item>
+    
+    <item>
+      <title>Yet Another PhD to Data Science Post (Part II)</title>
+      <link>http://ethanrosenthal.com/2015/09/29/insight-to-interviews/</link>
+      <pubDate>Tue, 29 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2015/09/29/insight-to-interviews/</guid>
+      <description>Welcome to Part II of my journey from academic to industry data scientist. In my previous post, I wrote of my preparation leading up to the application to Insight Data Science. I will now talk about the Insight application process, the actual program, and demoing my project at companies. I will save studying for interviews and the actual interview process for the final post.
+Application to Insight The Insight written application is fairly straightforward.</description>
+    </item>
+    
+    <item>
+      <title>Yet Another PhD to Data Science Post (Part I)</title>
+      <link>http://ethanrosenthal.com/2015/09/23/start-to-insight/</link>
+      <pubDate>Wed, 23 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2015/09/23/start-to-insight/</guid>
+      <description>The internet is awash with posts by former PhD students who have succesfully transitioned into data scientist roles in industry (see here, here, here, and tangentially here). I loved reading these posts while studying for job interviews because I felt like the more I saw examples of sucessful transitions, the more likely it seemed that such feats were actually achievable. I am going to try to touch on many of the aspects of leaving academia for data science while trying to limit the length of this post.</description>
+    </item>
+    
+    <item>
+      <title>Festival Chatter (Part 4) - Some Simple Sentiment Analysis</title>
+      <link>http://ethanrosenthal.com/2014/11/25/festival-chatter-part4/</link>
+      <pubDate>Tue, 25 Nov 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2014/11/25/festival-chatter-part4/</guid>
+      <description>I think this post will probably conclude my Festival Chatter series on analyzing Bonnaroo tweets in Python (part 1, part 2, part 3). I&amp;rsquo;ve had a lot of fun messing around with this dataset, but I think it&amp;rsquo;s time to move on to playing with something else. For this last post, though, I will show some simple sentiment analysis of the collected tweets. There are a whole bunch of issues with this method of sentiment analysis.</description>
+    </item>
+    
+    <item>
+      <title>Festival Chatter (Part 3) - Bonnaroo Analysis in the Fourth Dimension</title>
+      <link>http://ethanrosenthal.com/2014/10/06/festival-chatter-part3/</link>
+      <pubDate>Mon, 06 Oct 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2014/10/06/festival-chatter-part3/</guid>
+      <description>In this series of posts (part 1, part 2), I have been showing how to use Python and other data scientist tools to analyze a collection of tweets related to the 2014 Bonnaroo Music and Arts Festival. So far, the investigation has been limited to summary data of the full dataset. The beauty of Twitter is that it occurs in realtime, so we can now peer into the fourth dimension and learn about these tweets as a function of time.</description>
+    </item>
+    
+    <item>
+      <title>Festival Chatter (Part 2) - Evaluating Band Popularity from Bonnaroo Tweets</title>
+      <link>http://ethanrosenthal.com/2014/09/09/festival-chatter-part2/</link>
+      <pubDate>Tue, 09 Sep 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2014/09/09/festival-chatter-part2/</guid>
+      <description>In my previous post, I wrote about how I collected tweets about the Bonnaroo Music and Arts Festival during the entirety of the festival. There are a wide range of questions that could be answered by this dataset, like
+ Do people spell worse as they become more intoxicated throughout the night? Does text sentiment decline as people go more days without bathing? Who in the world tweets from a laptop during a music festival?</description>
+    </item>
+    
+    <item>
+      <title>Festival Chatter (Part 1) - Collecting Bonnaroo Tweets from the Streaming Twitter API</title>
+      <link>http://ethanrosenthal.com/2014/08/31/festival-chatter-part1/</link>
+      <pubDate>Sun, 31 Aug 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2014/08/31/festival-chatter-part1/</guid>
+      <description>It seems like summer music festivals get more and more popular every year. I guess this could be the subject of its own post, but let&amp;rsquo;s stick with my personal anecdotal evidence for the time being. I remember only a handful of music festivals in the U.S. when I was in high school - Bonnaroo, All Good, 10,000 Lakes, and Coachella. I am sure that there were others, but it was nowhere near as ubiquitous as present day.</description>
+    </item>
+    
+    <item>
+      <title>Setting up a website and separate blog repository hosted on GitHub</title>
+      <link>http://ethanrosenthal.com/2014/08/22/hello-world/</link>
+      <pubDate>Fri, 22 Aug 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://ethanrosenthal.com/2014/08/22/hello-world/</guid>
+      <description>As the title of the blog suggests, I would like to use this space to write about anything &amp;ldquo;data&amp;rdquo;-related that piques my interest. Likely, this will consist of personal and academic projects.
+As the title of this post suggests, I would like to explain how I created this blog and my website.
+Setting up the website - ethanrosenthal.com During my 5 years at Columbia, I have sporadically messed around with coding html and css in an attempt to make a personal website.</description>
     </item>
     
   </channel>

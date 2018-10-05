@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+  
+
+  <title>
+    
+    
+        Likes Out! Guerilla Dataset! | ethan rosenthal
+    
+  </title>
+
+  <meta name="title" content="Likes Out! Guerilla Dataset! | ethan rosenthal">
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta name="generator" content="">
+  <base href="http://ethanrosenthal.com">
+
+  
+    <meta name="description" content="&ndash; Zack de la Rocha
+tl;dr -&gt; I collected an implicit feedback dataset along with side-information about the items. This dataset contains around 62,000 users and 28,000 items. All the data lives here inside of this repo. Enjoy!
+In a previous post, I wrote about how to use matrix factorization and explicit feedback data in order to build recommendation systems. This is data where a user has given a clear preference for an item such as a star rating for an Amazon product or a numerical rating for a movie like in the MovieLens data.">
+  
+
+  
+    <meta name="author" content="Ethan Rosenthal">
+  
+
+  
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@eprosenthal">
+    <meta name="twitter:creator" content="@eprosenthal">
+  
+
+  <meta property="og:title" content="Likes Out! Guerilla Dataset! | ethan rosenthal">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://ethanrosenthal.com">
+
+  
+    <meta property="og:image" content="http://ethanrosenthal.com/images/profile_pic2.jpg">
+  
+
+  
+    <meta name="og:description" content="&ndash; Zack de la Rocha
+tl;dr -&gt; I collected an implicit feedback dataset along with side-information about the items. This dataset contains around 62,000 users and 28,000 items. All the data lives here inside of this repo. Enjoy!
+In a previous post, I wrote about how to use matrix factorization and explicit feedback data in order to build recommendation systems. This is data where a user has given a clear preference for an item such as a star rating for an Amazon product or a numerical rating for a movie like in the MovieLens data.">
+  
+
+  
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.ico">
+    <meta name="theme-color" content="#FFF">
+  
+
+  <link rel="canonical" href="http://ethanrosenthal.com/2016/10/09/likes-out-guerilla-dataset/">
+
+  
+
+  <link rel="stylesheet" href="http://ethanrosenthal.com/styles/main.css" type="text/css">
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+
+  
+
+  
+    <link href="http://ethanrosenthal.comcss/dataframe.css" rel="stylesheet" type="text/css">
+  
+
+  
+</head>
+
+  <body>
+    
+
+
+
+<nav class="row middle-xs center-xs">
+  <div class="col-xs-6 col-sm-1 logo">
+    <a href="http://ethanrosenthal.com#"><img src="http://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
+  </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#blog">Blog</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="https://physics.ethanrosenthal.com">Physics</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#about">About</a></h3>
+      </div>
+    
+  <div class="col-xs-6 col-sm-1 nav-toggle">
+      <a href="" class="nav-icon" onclick="return false"><img src="http://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="http://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
+  </div>
+</nav>
+
+<section class="nav-full row middle-xs center-xs">
+  <div class="col-xs-12">
+    <div class="row middle-xs center-xs">
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#blog">Blog</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="https://physics.ethanrosenthal.com">Physics</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#about">About</a></h1></div>
+      
+    </div>
+  </div>
+</section>
+
+    <main>
+
+      <section class="container">
+          <section class="content">
+              <h1> Likes Out! Guerilla Dataset! </h1>
+
+              <div class="sub-header">
+                  October 9, 2016 · 7 minute read
+              </div>
+
+              <article class="entry-content">
+                  
+
+<div class="jupyter-cell markdown">
+
+
+<!-- PELICAN_BEGIN_SUMMARY -->
+
+<p>&ndash; <a href="https://www.youtube.com/watch?v=H0kJLW2EwMg">Zack de la Rocha</a></p>
+
+<p><em>tl;dr -&gt; I collected an implicit feedback dataset along with side-information about the items. This dataset contains around 62,000 users and 28,000 items. All the data lives <a href="https://github.com/EthanRosenthal/rec-a-sketch/tree/master/data">here</a> inside of <a href="https://github.com/EthanRosenthal/rec-a-sketch">this</a> repo. Enjoy!</em></p>
+
+<!-- PELICAN_END_SUMMARY -->
+
+<p>In a previous <a href="http://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/">post</a>, I wrote about how to use matrix factorization and explicit feedback data in order to build recommendation systems. This is data where a user has given a clear preference for an item such as a star rating for an Amazon product or a numerical rating for a movie like in the <a href="http://grouplens.org/datasets/movielens/">MovieLens</a> data. A natural next step is to discuss recommendation systems for implicit feedback which is data where a user has shown a <em>preference</em> for an item like &ldquo;number of minutes listened&rdquo; for a song on Spotify or &ldquo;number of times clicked&rdquo; for a product on a website.</p>
+
+<p>Implicit feedback-based techniques likely consitute the majority of modern recommender systems. When I set out to write a post on these techniques, I found it difficult to find suitable data. This makes sense - most companies are loathe to share users&rsquo; click or usage data (and for good reasons). A cursory google search revealed a couple datasets that people use, but I kept finding issues with these datasets. For example, the million song database was shown to have <a href="http://labrosa.ee.columbia.edu/millionsong/blog/12-1-2-matching-errors-taste-profile-and-msd">some</a> <a href="http://labrosa.ee.columbia.edu/millionsong/blog/12-2-12-fixing-matching-errors">issues</a> with data quality, while many <a href="http://link.springer.com/chapter/10.1007%2F978-3-642-33486-3_5">other</a> <a href="http://dl.acm.org/citation.cfm?id=2799671">people</a> just repurposed the MovieLens or Netflix data as though it was implicit (which it is not).</p>
+
+<p>This started to feel like one of those &ldquo;fuck it, I&rsquo;ll do it myself&rdquo; things. And so I did.</p>
+
+<p>All code for collecting this data is located on my <a href="https://github.com/EthanRosenthal/rec-a-sketch">github</a>. The actual collected data lives in this repo, as well.</p>
+
+<h2 id="sketchfab-https-sketchfab-com"><a href="https://sketchfab.com/">Sketchfab</a></h2>
+
+<p>Back when I was a graduate student, I thought for some time that maybe I would work in the hardware space (or at a museum, or the government, or a gazillion other things). I wanted to have public, digital proof of my (<a href="https://sketchfab.com/models/3a10dc58988748c69ed4b501eafaea00">shitty</a>) CAD skills, and I stumbled upon <a href="https://sketchfab.com/">Sketchfab</a>, a website which allows you to share 3D renderings that anybody else with a browser can rotate, zoom, or watch animate. It&rsquo;s kind of like YouTube for 3D (and now VR!).</p>
+
+<div class="sketchfab-embed-wrapper"><iframe width="640" height="480" src="https://sketchfab.com/models/522e811044bc4e09bf84431e6c1cc109/embed" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" onmousewheel=""></iframe>
+
+<p style="font-size: 13px; font-weight: normal; margin: 5px; color: #4A4A4A;">
+    <a href="https://sketchfab.com/models/522e811044bc4e09bf84431e6c1cc109?utm_medium=embed&utm_source=website&utm_campain=share-popup" target="_blank" style="font-weight: bold; color: #1CAAD9;">Liopleurodon Ferox Swim Cycle</a>
+    by <a href="https://sketchfab.com/kyan0s?utm_medium=embed&utm_source=website&utm_campain=share-popup" target="_blank" style="font-weight: bold; color: #1CAAD9;">Kyan0s</a>
+    on <a href="https://sketchfab.com?utm_medium=embed&utm_source=website&utm_campain=share-popup" target="_blank" style="font-weight: bold; color: #1CAAD9;">Sketchfab</a>
+</p>
+</div>
+
+<p>Users can &ldquo;like&rdquo; 3D models which is an excellent implicit signal. It turns out you can actually see which user liked which model. This presumably allows one to reconstruct the classic recommendation system &ldquo;ratings matrix&rdquo; of <em>users</em> as rows and <em>3D models</em> as columns with <em>likes</em> as the elements in the sparse matrix.</p>
+
+<p>Okay, I can see the likes on the website, but how do I actually get the data?</p>
+
+<h2 id="crawling-https-www-youtube-com-watch-v-gd9ohyroln0-with-selenium"><a href="https://www.youtube.com/watch?v=Gd9OhYroLN0">Crawling</a> with Selenium</h2>
+
+<p>When I was at <a href="http://insightdatascience.com/">Insight Data Science</a>, I built an ugly <a href="https://github.com/EthanRosenthal/TutorWorthy/blob/master/pre_production/scripts/scraper.py">script</a> to scrape a tutoring website. This was relatively easy. The site was largely static, so I used BeautifulSoup to simply parse through the HTML.</p>
+
+<p>Sketchfab is a more modern site with extensive javascript. One must wait for the javascript to render the HTML before parsing through it. A method of automating this is to use <a href="http://www.seleniumhq.org/">Selenium</a>. This software essentially lets you write code to drive an actual web browser.</p>
+
+<p>To get up and running with Selenium, you must first download a driver to run your browser. I went <a href="https://sites.google.com/a/chromium.org/chromedriver/downloads">here</a> to get a Chrome driver. The Python Selenium package can then be installed using anaconda on the conda-forge channel:</p>
+
+<pre><code class="language-bash">conda install --channel https://conda.anaconda.org/conda-forge selenium
+</code></pre>
+
+<p>Opening a browser window with Selenium is quite simple:</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">from selenium import webdriver
+
+chromedriver = '/path/to/chromedriver'
+BROWSER = webdriver.Chrome(chromedriver)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>Now we must decide where to point the browser.</p>
+
+<p>Sketchfab has over <a href="https://blog.sketchfab.com/1million/">1 Million</a> 3D models and more than 600,000 users. However, not every user has liked a model, and not every model has been liked by a user. I decided to limit my search to models that had been liked by at least 5 users. To start my crawling, I went to the &ldquo;all&rdquo; <a href="https://sketchfab.com/models?sort_by=-likeCount">page</a> for popular models (sorted by number of likes, descending) and started crawling from the top.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">BROWSER.get('https://sketchfab.com/models?sort_by=-likeCount&amp;page=1')
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>Upon opening the main models page, you can open the chrome developer tools (ctrl-shift-i in linux) to reveal the HTML structure of the page. This looks like the following (click to view full-size):</p>
+
+<p><a href="http://ethanrosenthal.com/images/sketchfab_pop_models.png"><img src="http://ethanrosenthal.com/images/sketchfab_pop_models.png" alt="main page" /></a></p>
+
+<p>Looking through the HTML reveals that all of the displayed 3D models are housed in a <code>&lt;div&gt;</code> of class <code>infinite-grid</code>. Each 3D model is inside of a <code>&lt;li&gt;</code> element with class <code>item</code>. One can grab the list of all these list elements as follows:</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">elem = BROWSER.find_element_by_xpath(&quot;//div[@class='infinite-grid']&quot;)
+item_list = elem.find_elements_by_xpath(&quot;.//li[@class='item']&quot;)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>It turns out that each Sketchfab model has a unique ID associated with it which we shall call its model ID, or <code>mid</code>. This <code>mid</code> can be found in each list element through the <code>data-uid</code> attribute.</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">item = item_list[0]
+mid = item.get_attribute('data-uid')
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>The url for the model is then simply <code>https://sketchfab.com/models/mid</code> where you replace <code>mid</code> with the actual unique ID.</p>
+
+<p>I have written a script which automates this collection of each <code>mid</code>. This script is called <a href="https://github.com/EthanRosenthal/rec-a-sketch/blob/master/crawl.py">crawl.py</a> in the main <a href="https://github.com/EthanRosenthal/rec-a-sketch">repo</a>. To log all model urls, one runs</p>
+
+<pre><code class="language-bash">python crawl.py config.yml --type urls
+</code></pre>
+
+<p>All told, I ended up with 28,825 models (from October 2016). The model name and associated <code>mid</code> are in the file <code>model_urls.psv</code> <a href="https://github.com/EthanRosenthal/rec-a-sketch/tree/master/data">here</a>.</p>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<h2 id="apple-https-www-youtube-com-watch-v-swwt2ucdv2c-of-my-api"><a href="https://www.youtube.com/watch?v=swWT2UcDv2c">Apple</a> of my API</h2>
+
+<p>In order to log which user liked which model, I originally wrote a Selenium script to go to every model&rsquo;s url and scroll through the users that had liked the model. This took for-fucking-ever. I realized that maybe Sketchfab serves up this information via an API. I did a quick Google search and stumbled upon <a href="http://www.gregreda.com/">Greg Reda&rsquo;s</a> blog <a href="http://www.gregreda.com/2015/02/15/web-scraping-finding-the-api/">post</a> which described how to use semi-secret APIs for collecting data. Sure enough, this worked perfectly for my task!</p>
+
+<p>With a <code>mid</code> in hand, one can hit the api by passing the following parameters</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">import requests
+
+mid = '522e811044bc4e09bf84431e6c1cc109'
+count = 24
+params = {'model':mid, 'count':count, 'offset':0}
+
+url = 'https://sketchfab.com/i/likes'
+response = requests.get(url, params=params).json()
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>Inside of <code>response['results']</code> is a list of information about each user that liked the model. <code>crawl.py</code> has a function to read in the model urls file output by <code>crawl.py</code> and then collect every user that liked that model.</p>
+
+<pre><code class="language-bash">python crawl.py config.yml --type likes
+</code></pre>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>After running this script collecting likes on 28,825 models in early October 2016, I ended up with data on 62,583 users and 632,840 model-user-like combinations! This data is thankfully small enough to still fit in a github repo (52 Mb) and lives <a href="https://github.com/EthanRosenthal/rec-a-sketch/tree/master/data">here</a></p>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>Even though these likes are public, I felt a little bad about making this data so easy to publicly parse. I wrote a small script called <a href="https://github.com/EthanRosenthal/rec-a-sketch/blob/master/anonymize.py">anonymize.py</a> which hashes the user ID&rsquo;s for the model likes. Running this script is simple (just make sure to provide your own secret key):</p>
+
+<pre><code class="language-bash">python anonymize.py unanonymized_likes.csv anonymized_likes.csv &quot;SECRET KEY&quot;
+</code></pre>
+
+<p>The likes data in the main repo has been anonymized.</p>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<h1 id="information-https-www-youtube-com-watch-v-f0nowwiosiw-on-the-side"><a href="https://www.youtube.com/watch?v=F0nOWwiosiw">Information</a> on the side</h1>
+
+<p>An exciting area of recommendation research is the combination of user and item side information with implicit or explicit feedback. In later posts, I will address this space, but, for now, let&rsquo;s just try to grab some side information. Sketchfab users are able to categorize models that they upload (e.g. &ldquo;Characters&rdquo;, &ldquo;Places &amp; scenes&rdquo;, etc&hellip;) as well as tag their models with relevant labels (e.g. &ldquo;bird&rdquo;, &ldquo;maya&rdquo;, &ldquo;blender&rdquo;, &ldquo;sculpture&rdquo;, etc&hellip;). Presumably, this extra information about models could be useful in making more accurate recommendations.</p>
+
+<pre><code class="language-crawl.py```">
+```bash
+python crawl.py config.yml --type features
+</code></pre>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<h1 id="what-s-next">What&rsquo;s next?</h1>
+
+<p>With all of our data in hand, subsequent blog posts will dive into the wild west of implicit feedback recommendation systems. I&rsquo;ll show you how to train these models, use these models, and then build a simple Flask app, called Rec-a-Sketch, for serving 3D Sketchfab recommendations.</p>
+
+</div>
+
+
+              </article>
+
+              <div class="pagination">
+                  
+                      <a href="http://ethanrosenthal.com/2016/08/30/towards-optimal-personalization/">&laquo; Towards optimal personalization: synthesisizing machine learning and operations research</a>
+                  
+                  
+                      <a href="http://ethanrosenthal.com/2016/10/19/implicit-mf-part-1/">Intro to Implicit Matrix Factorization: Classic ALS with Sketchfab Models &raquo;</a>
+                  
+              </div>
+          </section>
+          <br>
+          <section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view comments powered by <a href="http://disqus.com/?ref_noscript">Disqus</a>.</noscript>
+</section>
+
+      </section>
+
+    </main>
+    <footer class="row middle-xs center-xs">
+
+  
+  
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://github.com/EthanRosenthal">GitHub</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://linkedin.com/in/ethanrosenthal">LinkedIn</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://twitter.com/eprosenthal">Twitter</a></div>
+  
+
+  
+    <div class="col-xs-12">
+      
+        Copyright &copy; 2018 ethan rosenthal.
+      
+      
+        <a href="https://tomanistor.com" target="_blank">Theme developed by Toma Nistor</a>
+      
+    </div>
+  
+
+</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+  <script src="http://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
+
+
+  </body>
+</html>

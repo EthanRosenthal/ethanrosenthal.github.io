@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+  
+
+  <title>
+    
+    
+        Quick and Dirty Serverless Integer Programming | ethan rosenthal
+    
+  </title>
+
+  <meta name="title" content="Quick and Dirty Serverless Integer Programming | ethan rosenthal">
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta name="generator" content="">
+  <base href="http://ethanrosenthal.com">
+
+  
+    <meta name="description" content="We all know that Python has risen above its humble beginnings such that it now powers billion dollar companies. Let&rsquo;s not forget Python&rsquo;s roots, though! It&rsquo;s still an excellent language for running quick and dirty scripts that automate some task. While this works fine for automating my own tasks because I know how to navigate the command line, it&rsquo;s a bit much to ask a layperson to somehow install python and dependencies, open Terminal on a Mac (god help you if they have a Windows computer), type a random string of characters, and hit enter.">
+  
+
+  
+    <meta name="author" content="Ethan Rosenthal">
+  
+
+  
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@eprosenthal">
+    <meta name="twitter:creator" content="@eprosenthal">
+  
+
+  <meta property="og:title" content="Quick and Dirty Serverless Integer Programming | ethan rosenthal">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://ethanrosenthal.com">
+
+  
+    <meta property="og:image" content="http://ethanrosenthal.com/images/profile_pic2.jpg">
+  
+
+  
+    <meta name="og:description" content="We all know that Python has risen above its humble beginnings such that it now powers billion dollar companies. Let&rsquo;s not forget Python&rsquo;s roots, though! It&rsquo;s still an excellent language for running quick and dirty scripts that automate some task. While this works fine for automating my own tasks because I know how to navigate the command line, it&rsquo;s a bit much to ask a layperson to somehow install python and dependencies, open Terminal on a Mac (god help you if they have a Windows computer), type a random string of characters, and hit enter.">
+  
+
+  
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.ico">
+    <meta name="theme-color" content="#FFF">
+  
+
+  <link rel="canonical" href="http://ethanrosenthal.com/2018/08/06/serverless-integer-programming/">
+
+  
+
+  <link rel="stylesheet" href="http://ethanrosenthal.com/styles/main.css" type="text/css">
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.css" integrity="sha384-D+9gmBxUQogRLqvARvNLmA9hS2x//eK1FhVb9PiU86gmcrBrJAQT8okdJ4LMp2uv" crossorigin="anonymous">
+  
+
+  
+    <link href="http://ethanrosenthal.comcss/dataframe.css" rel="stylesheet" type="text/css">
+  
+
+  
+</head>
+
+  <body>
+    
+
+
+
+<nav class="row middle-xs center-xs">
+  <div class="col-xs-6 col-sm-1 logo">
+    <a href="http://ethanrosenthal.com#"><img src="http://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
+  </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#blog">Blog</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="https://physics.ethanrosenthal.com">Physics</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#about">About</a></h3>
+      </div>
+    
+  <div class="col-xs-6 col-sm-1 nav-toggle">
+      <a href="" class="nav-icon" onclick="return false"><img src="http://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="http://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
+  </div>
+</nav>
+
+<section class="nav-full row middle-xs center-xs">
+  <div class="col-xs-12">
+    <div class="row middle-xs center-xs">
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#blog">Blog</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="https://physics.ethanrosenthal.com">Physics</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#about">About</a></h1></div>
+      
+    </div>
+  </div>
+</section>
+
+    <main>
+
+      <section class="container">
+          <section class="content">
+              <h1> Quick and Dirty Serverless Integer Programming </h1>
+
+              <div class="sub-header">
+                  August 6, 2018 · 7 minute read
+              </div>
+
+              <article class="entry-content">
+                  
+
+<div class="jupyter-cell markdown">
+
+
+<!-- PELICAN_BEGIN_SUMMARY -->
+
+<p>We all know that Python has <a href="https://www.economist.com/graphic-detail/2018/07/26/python-is-becoming-the-worlds-most-popular-coding-language">risen</a> above its humble beginnings such that it now powers <a href="https://instagram-engineering.com/web-service-efficiency-at-instagram-with-python-4976d078e366">billion dollar companies</a>. Let&rsquo;s not forget Python&rsquo;s roots, though! It&rsquo;s still an excellent language for running quick and dirty scripts that automate some task. While this works fine for automating my own tasks because I know how to navigate the command line, it&rsquo;s a bit much to ask a layperson to somehow install python and dependencies, open Terminal on a Mac (god help you if they have a Windows computer), type a random string of characters, and hit enter. Ideally, you would give the layperson a button, they hit it, and they get their result.</p>
+
+<!-- PELICAN_END_SUMMARY -->
+
+<p>I recently deployed a solution which allowed me to do just this. Even better - it was all free! In this post, I&rsquo;ll talk about how I used Google Sheets as my input form, <a href="https://datasheets.readthedocs.io/en/latest/#">datasheets</a> to convert Google Sheets to <a href="https://pandas.pydata.org/">pandas</a>, <a href="https://github.com/Miserlou/Zappa">Zappa</a> for deploying a serverless <a href="http://flask.pocoo.org/">Flask</a> app, and <a href="https://pythonhosted.org/PuLP/">PuLP</a> for solving a quick integer programming problem to make a simple and free ad hoc optimization service.</p>
+
+<p><em>Note: all the code for this service is located on my <a href="https://github.com/EthanRosenthal/fml">github</a></em></p>
+
+<h2 id="fml">FML</h2>
+
+<p>Every project should start as a problem, and mine was no different. My wife competes in <a href="https://fantasymovieleague.com/">fantasy movie league</a>. This is like fantasy football for movie geeks. The rules are simple:</p>
+
+<p>You are a fantasy movie theater owner. You must decide which movies to play on your 8 screens. Each movie costs a different amount to screen, and the goal is to generate the most box office revenue over the weekend given your available budget. Talking with her, I realized that, if one can do a good job predicting box office revenue for the weekend (the hard part of the problem), then deciding how many screens to play each movie becomes a simple integer programming allocation problem.</p>
+
+<h2 id="requirements">Requirements</h2>
+
+<p>Now that we have the problem, what are the requirements?</p>
+
+<ol>
+<li>A method for inputting a bunch of data:
+
+<ul>
+<li>Movie name</li>
+<li>Expected revenue</li>
+<li>Cost to screen</li>
+</ul></li>
+<li>Ability to run the allocation problem from a browser.</li>
+<li>A view of the solution</li>
+</ol>
+
+<p>What&rsquo;s the easiest input form that data scientists hate?</p>
+
+<p>Excel</p>
+
+<p>What&rsquo;s worse than Excel?</p>
+
+<p>Google Sheets</p>
+
+<h2 id="datasheets">Datasheets</h2>
+
+<p>Thankfully, <a href="https://www.squarespace.com/">Squarespace</a> created <a href="https://datasheets.readthedocs.io/en/latest/">datasheets</a>. This is a nice library that makes interactions between <code>pandas</code> and Google Sheets impressively painless. The library is worth it for the detailed <a href="https://datasheets.readthedocs.io/en/latest/getting_oauth_credentials.html">OAuth page</a> alone (I once spent 2 weeks struggling with Google OAuth pain and <em>really</em> wish this page had existed at that time). What&rsquo;s particularly nice about the OAuth page is that it walks through setting up a <em>service account</em> which does not require the end-user to go through the typical OAuth dance of browser redirects to and from the Google login page. This is nce because these redirects can get messed up when moving from local development to production systems in the cloud (or at least they always get messed up when I try to do it!).</p>
+
+<p>Anywho, the first step was to setup my Google Sheets credentials and download the <code>client_secrets.json</code> and <code>service_key.json</code> files. With these handy, I can now access my Google Sheets spreadsheet using <code>datasheets</code>. The spreadsheet is named <code>FML</code>, and the <code>inputs</code> tab looks like</p>
+
+<p><a href="images/fml/inputs.png"><img src="images/fml/inputs.png" alt="inputs" /></a></p>
+
+<p>We can pull this into a pandas DataFrame by setting some <code>datasheets</code> environment variables to point to our credentials and then creating a <code>Client</code></p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">import os
+import datasheets
+
+os.environ['DATASHEETS_SECRETS_PATH'] = 'client_secrets.json'
+os.environ['DATASHEETS_SERVICE_PATH'] = 'service_key.json'
+
+client = datasheets.Client(service=True)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<p>If that goes well, we can now grab our workbook (aka the Google Sheets file) and download the tab of data</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">workbook = client.fetch_workbook('FML')
+input_tab = workbook.fetch_tab('inputs')
+input_data = input_tab.fetch_data()
+
+input_data
+</code></pre>
+
+</div>
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>movie</th>
+      <th>revenue</th>
+      <th>cost</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Hotel Transylvania</td>
+      <td>13600000.0</td>
+      <td>157.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Ant Man</td>
+      <td>9100000.0</td>
+      <td>116.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Skyscraper</td>
+      <td>5300000.0</td>
+      <td>61.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Incredibles 2</td>
+      <td>7900000.0</td>
+      <td>89.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Jurassic World</td>
+      <td>6700000.0</td>
+      <td>76.0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Purge</td>
+      <td>2400000.0</td>
+      <td>28.0</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Sorry to Bother</td>
+      <td>1800000.0</td>
+      <td>18.0</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>MI: Fallout</td>
+      <td>63600000.0</td>
+      <td>756.0</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Mamma Mia</td>
+      <td>19800000.0</td>
+      <td>227.0</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Equalizer</td>
+      <td>18300000.0</td>
+      <td>201.0</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Unfriended</td>
+      <td>1600000.0</td>
+      <td>18.0</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>Blindspotting</td>
+      <td>3000000.0</td>
+      <td>41.0</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>Teen Titans</td>
+      <td>13400000.0</td>
+      <td>149.0</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>Three Idential Strangers</td>
+      <td>1100000.0</td>
+      <td>16.0</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>Eighth Grade</td>
+      <td>946000.0</td>
+      <td>26.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<h2 id="allocating-movies">Allocating Movies</h2>
+
+<p>I&rsquo;ve <a href="http://ethanrosenthal.com/2016/07/20/lets-talk-or/">written</a> <a href="http://ethanrosenthal.com/2016/08/30/towards-optimal-personalization/">previously</a> about integer programming in Python using the <a href="https://pythonhosted.org/PuLP/">PuLP</a> package, so I will avoid the introductions to integer programming and <code>pulp</code>. For this post, I will just quickly summarize the optimization problem, as it&rsquo;s reasonably simple!</p>
+
+<p>We only have a single <em>decision variable</em> in our problem. In the code, I call this <code>movie_counts</code>. In math, we can call it $S_{m}$ which corresponds to how many screens we will play movie $m$ on for the weekend. This is an <em>integer</em> decision variable with a lower bound of 0 and an upper bound of 8 (the number of screens we have available in our fantasy movie theater). It is an integer variable because we cannot screen a movie on 2.5 screens.</p>
+
+<p>With our decision variable in hand, we must now define an objective function. We simply want to maximize expected revenue. Let&rsquo;s define a quantity $r_{m}$ which is the amount of money that we expect movie $m$ to bring in (this is the revenue column in the above DataFrame). Our objective function is then simply</p>
+
+<p>$$\sum_{m} r_{m} * S_{m}$$</p>
+
+<p>Lastly, we need some constraints. We only have two, but, before I introduce them, I need to introduce one slight wrinkle in fantasy movie league. You get charged <span>$</span>2 million for every screen that you leave empty. We can incorporate this into our optimization problem by assuming that there is an _extra_ movie called &ldquo;Empty Screen&rdquo; and that the expected revenue for that movie is _negative_ <span>$</span>2 million. Our two constraints can now be defined:</p>
+
+<ol>
+<li>Every screen must be assigned a movie
+$$ \sum_{m} S_{m} = 8 $$</li>
+<li>We have a limited budget of <span>$</span>1000. Let&rsquo;s say movie $m$ costs $c_{m}$ to screen. Our budget constraint is thus
+$$ \sum_{m} c_{m} * S_{m} \leq 1000 $$
+<br /></li>
+</ol>
+
+<p>And that&rsquo;s it: one type of decision variable, a simple objective function, and two constraints. If you&rsquo;re interested, I wrap all of the above steps into an <code>Optimizer</code> class in the [fml code]((<a href="https://github.com/EthanRosenthal/fml/blob/master/fml/optimizer.py">https://github.com/EthanRosenthal/fml/blob/master/fml/optimizer.py</a>).</p>
+
+<p>With the optimization problem complete, I can pack up the solution as a DataFrame and use <code>datasheets</code> to write the data back to the <code>outputs</code> tab of the spreadsheet</p>
+
+<p></div>
+<div class="jupyter-cell code">
+</p>
+
+<div class="jupyter-input">
+
+
+<pre><code class="language-python">solution = ...
+outputs_tab = workbook.fetch_tab('outputs')
+outputs_tab.insert_data(solution)
+</code></pre>
+
+</div>
+
+
+<p></div>
+<div class="jupyter-cell markdown">
+</p>
+
+<h2 id="painless-serverless">Painless Serverless</h2>
+
+<p>The final step was to create a tiny Flask app with a button to launch the optimization. I made the simplest barebones site that I could, and then it was time to deploy.</p>
+
+<p><a href="images/fml/website.png"><img src="images/fml/website.png" alt="website" /></a></p>
+
+<p><a href="https://github.com/Miserlou/Zappa">Zappa</a> is a ridiculously cool Python library that lets you run any Python application as an AWS Lambda function and make it all discoverable via API Gateway. What this means is that you can make a Python website and run it in the cloud without an actual server running the code (as long as your website runs quickly, and uses few resources). You only pay for each time the website runs, but the first million times per month are free. If my wife happens to run this more than 1 million times, then I&rsquo;ll happily pay money.</p>
+
+<p>I was blown away by how easy <code>Zappa</code> was to use. Honestly, the hardest part was figuring out how to install python 3.6 on my linux computer because you have to use <code>virtualenv</code> instead of <code>conda</code> (though there&rsquo;s a <a href="https://github.com/Miserlou/Zappa/pull/108">PR</a> to fix that).</p>
+
+<p>I&rsquo;m just going to copy the documentation on how to get <code>Zappa</code> working because this is literally all that I had to do:</p>
+
+<pre><code class="language-bash">pip install zappa
+zappa init
+zappa deploy
+</code></pre>
+
+<p>After all of your code gets zipped up and sent to the cloud, <code>Zappa</code> tells you what cryptic URL at which you can now find your app. You can use custom domains and a gazillion other options, but this is quick and dirty serverless integer programming, remember?</p>
+
+<p>With the website deployed, my wife can now input data into the spreadsheet, hit the <code>Calculate</code> button on the website, and then watch the spreadsheet for the optimal movie screens with nary a command line in sight.</p>
+
+</div>
+
+
+              </article>
+
+              <div class="pagination">
+                  
+                      <a href="http://ethanrosenthal.com/2018/03/22/time-series-for-scikit-learn-people-part2/">&laquo; Time Series for scikit-learn People (Part II): Autoregressive Forecasting Pipelines</a>
+                  
+                  
+              </div>
+          </section>
+          <br>
+          <section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view comments powered by <a href="http://disqus.com/?ref_noscript">Disqus</a>.</noscript>
+</section>
+
+      </section>
+
+    </main>
+    <footer class="row middle-xs center-xs">
+
+  
+  
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://github.com/EthanRosenthal">GitHub</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://linkedin.com/in/ethanrosenthal">LinkedIn</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://twitter.com/eprosenthal">Twitter</a></div>
+  
+
+  
+    <div class="col-xs-12">
+      
+        Copyright &copy; 2018 ethan rosenthal.
+      
+      
+        <a href="https://tomanistor.com" target="_blank">Theme developed by Toma Nistor</a>
+      
+    </div>
+  
+
+</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/katex.min.js" integrity="sha384-483A6DwYfKeDa0Q52fJmxFXkcPCFfnXMoXblOkJ4JcA8zATN6Tm78UNL72AKk+0O" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0-rc.1/dist/contrib/auto-render.min.js" integrity="sha384-yACMu8JWxKzSp/C1YV86pzGiQ/l1YUfE8oPuahJQxzehAjEt2GiQuy/BIvl9KyeF" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function(){
+        	renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "\\\\begin{equation*}", right: "\\\\end{equation*}", display: true},
+                    {left: "$$", right: "$$", display: true},
+                    {left: "\\\[", right: "\\\]", display: true},
+                    {left: "$", right: "$", display: false},
+                    {left: "\\\(", right: "\\\)", display: false}
+                ]
+            });
+        });
+    </script>
+
+
+  <script src="http://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
+
+
+  </body>
+</html>

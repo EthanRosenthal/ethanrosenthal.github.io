@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+  
+
+  <title>
+    
+    
+        Festival Chatter (Part 1) - Collecting Bonnaroo Tweets from the Streaming Twitter API | ethan rosenthal
+    
+  </title>
+
+  <meta name="title" content="Festival Chatter (Part 1) - Collecting Bonnaroo Tweets from the Streaming Twitter API | ethan rosenthal">
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta name="generator" content="">
+  <base href="http://ethanrosenthal.com">
+
+  
+    <meta name="description" content="It seems like summer music festivals get more and more popular every year. I guess this could be the subject of its own post, but let&rsquo;s stick with my personal anecdotal evidence for the time being. I remember only a handful of music festivals in the U.S. when I was in high school - Bonnaroo, All Good, 10,000 Lakes, and Coachella. I am sure that there were others, but it was nowhere near as ubiquitous as present day.">
+  
+
+  
+    <meta name="author" content="Ethan Rosenthal">
+  
+
+  
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@eprosenthal">
+    <meta name="twitter:creator" content="@eprosenthal">
+  
+
+  <meta property="og:title" content="Festival Chatter (Part 1) - Collecting Bonnaroo Tweets from the Streaming Twitter API | ethan rosenthal">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://ethanrosenthal.com">
+
+  
+    <meta property="og:image" content="http://ethanrosenthal.com/images/profile_pic2.jpg">
+  
+
+  
+    <meta name="og:description" content="It seems like summer music festivals get more and more popular every year. I guess this could be the subject of its own post, but let&rsquo;s stick with my personal anecdotal evidence for the time being. I remember only a handful of music festivals in the U.S. when I was in high school - Bonnaroo, All Good, 10,000 Lakes, and Coachella. I am sure that there were others, but it was nowhere near as ubiquitous as present day.">
+  
+
+  
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.ico">
+    <meta name="theme-color" content="#FFF">
+  
+
+  <link rel="canonical" href="http://ethanrosenthal.com/2014/08/31/festival-chatter-part1/">
+
+  
+
+  <link rel="stylesheet" href="http://ethanrosenthal.com/styles/main.css" type="text/css">
+
+  
+
+  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+
+  
+
+  
+
+  
+</head>
+
+  <body>
+    
+
+
+
+<nav class="row middle-xs center-xs">
+  <div class="col-xs-6 col-sm-1 logo">
+    <a href="http://ethanrosenthal.com#"><img src="http://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
+  </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#blog">Blog</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="https://physics.ethanrosenthal.com">Physics</a></h3>
+      </div>
+    
+      <div class="col-xs-3 col-sm-2">
+        <h3><a href="http://ethanrosenthal.com/#about">About</a></h3>
+      </div>
+    
+  <div class="col-xs-6 col-sm-1 nav-toggle">
+      <a href="" class="nav-icon" onclick="return false"><img src="http://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="http://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
+  </div>
+</nav>
+
+<section class="nav-full row middle-xs center-xs">
+  <div class="col-xs-12">
+    <div class="row middle-xs center-xs">
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#blog">Blog</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="https://physics.ethanrosenthal.com">Physics</a></h1></div>
+      
+        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#about">About</a></h1></div>
+      
+    </div>
+  </div>
+</section>
+
+    <main>
+
+      <section class="container">
+          <section class="content">
+              <h1> Festival Chatter (Part 1) - Collecting Bonnaroo Tweets from the Streaming Twitter API </h1>
+
+              <div class="sub-header">
+                  August 31, 2014 · 6 minute read
+              </div>
+
+              <article class="entry-content">
+                  
+
+<p>It seems like summer music festivals get more and more popular every year. I guess this could be the subject of its own post, but let&rsquo;s stick with my personal anecdotal evidence for the time being. I remember only a handful of music festivals in the U.S. when I was in high school - Bonnaroo, All Good, 10,000 Lakes, and Coachella. I am sure that there were others, but it was nowhere near as ubiquitous as present day. Even so, <a href="http://www.bonnaroo.com/">Bonnaroo</a> remains one of the most popular festivals east of the Mississippi.</p>
+
+<p>I wonder if social media is partly responsible for the increased interest in music festivals? Who doesn&rsquo;t get jealous when they see somebody post a picture of a sunny day with thousands of other people that aren&rsquo;t you watching some big name artist? And since there are rarely pictures of mud-soaked tents or decrepit porta-potties, maybe people today are less likely to consider the discomforts of camping out than they would have in the past?</p>
+
+<p>Unfortunately, I think that it is pretty hard to quantify this particular influence of social media. Let us work off of the assumption that there is <em>some</em> influence from social media, though. If so, then it would be beneficial for artists to quantify their own popularity as well as their primary audience demographics. This seems like a safe line of thought given that there are entire <a href="https://www.nextbigsound.com/">companies</a> devoted to tracking artists&rsquo; social media presence. But without a full company at my disposal, what can I learn just using my personal computer?</p>
+
+<p><strong>To answer that question, I decided to track all tweets related to Bonnaroo during the entire 4 days of the festival.</strong></p>
+
+<p>But enough ranting - let&rsquo;s get some data.</p>
+
+<h2 id="the-twitter-streaming-api">The Twitter Streaming API</h2>
+
+<p>Twitter is one of the easiest services to track social media presence. I proclaim this as fact because it was quite simple for me to do it, and, if you continue reading, then you will be able to track tweets, too. And thanks to the beauty of the internet, where everybody seems to provide information for free, I was able to use this <a href="http://www.danielforsyth.me/analyzing-a-nhl-playoff-game-with-twitter/">post</a> from Daniel Forsyth to practically verbatim copy code and set up my own Twitter tracker. I will describe some of the process, but you should really just read his post.</p>
+
+<h4 id="get-your-twitter-app">Get Your Twitter App</h4>
+
+<p>Before you can begin collecting tweets on your computer, you must first setup an account on the <a href="https://dev.twitter.com">Twitter developer site</a>. After creating an account, click your icon in the upper right corner and go to &ldquo;My applications&rdquo;. You must now create an &ldquo;App&rdquo; which will allows your computer to connect to the Twitter API.</p>
+
+<p>You have to give a title, description, and website for this app. You can honestly list whatever you want here, so do not worry if you do not have a website. After creating the app, click the API Keys tab. Scroll to the bottom and click &ldquo;Create my access token&rdquo;. It takes about 30 seconds for the tokens to be created, so wait a bit and then refresh the page.</p>
+
+<p>You should now have an &ldquo;Access token&rdquo; and &ldquo;Access token secret&rdquo; listed at the bottom of the page. Combined with the &ldquo;API key&rdquo; and &ldquo;API secret&rdquo; at the top of the page, you have everything you need to start tracking tweets. By the way, these codes are all part of the <a href="http://en.wikipedia.org/wiki/OAuth">OAuth</a> system that I know absolutely nothing about but somehow allows you to securely connect to the Twitter API.</p>
+
+<h4 id="tweepy-and-pymongo-because-python-always">Tweepy and Pymongo - Because Python Always</h4>
+
+<p>Data scientists love Python (which is again anecdotal - somebody should aggregate job postings). Coming from MATLAB, I have found Python to be about as low of a barrier to entry as I could hope for. In the interest of keeping the language consistent throughout the data pipeline, <a href="http://www.tweepy.org/">Tweepy</a> is a simple Python library for interacting with the Twitter API. Below is the code that I used to track all tweets that mention &ldquo;Bonnaroo&rdquo; (not case sensitive) or any mispelling of Bonnaroo that I could think of. I consistently mispell it, so it seems likely that others would, too. By the way, this code is <em>completely</em> stolen from that <a href="http://www.danielforsyth.me/analyzing-a-nhl-playoff-game-with-twitter/">post</a> that I mentioned earlier, so I claim absolutely zero credit.</p>
+
+<pre><code class="language-python">
+# This code was basically totally stolen from
+# http://www.danielforsyth.me/analyzing-a-nhl-playoff-game-with-twitter/
+
+import tweepy
+import sys
+import pymongo
+
+######### The below authentication has been omitted
+consumer_key=&quot;&quot;
+consumer_secret=&quot;&quot;
+
+access_token=&quot;&quot;
+access_token_secret=&quot;&quot;
+#########
+
+auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
+api = tweepy.API(auth)
+
+class CustomStreamListener(tweepy.StreamListener):
+    def __init__(self, api):
+        self.api = api
+        super(tweepy.StreamListener, self).__init__()
+
+        self.db = pymongo.MongoClient().bonnaroo
+
+    def on_status(self, status):
+        status.text=str(unicode(status.text).encode(&quot;utf-8&quot;))
+        print status.text , &quot;\n&quot;
+
+        data ={}
+        data['text'] = status.text
+        data['created_at'] = status.created_at
+        data['geo'] = status.geo
+        data['source'] = status.source
+
+        self.db.Tweets.insert(data)
+
+
+    def on_error(self, status_code):
+        print &gt;&gt; sys.stderr, 'Encountered error with status code:', status_code
+        return True # Don't kill the stream
+
+    def on_timeout(self):
+        print &gt;&gt; sys.stderr, 'Timeout...'
+        return True # Don't kill the stream
+
+sapi = tweepy.streaming.Stream(auth, CustomStreamListener(api))
+sapi.filter(track=['bonnaroo','bonaroo','bonarroo','bonnarroo']) # Get all mispellings
+</code></pre>
+
+<p>Remember those API keys that you got for your Twitter app? You should set the <code>consumer_key</code> and <code>consumer_secret</code> variables equal to the &ldquo;API key&rdquo; and &ldquo;API secret&rdquo; codes, respectively. Likewise, the &ldquo;Access token&rdquo; and &ldquo;Access token secret&rdquo; codes should be mapped to the <code>access_token</code> and <code>access_token_secret</code> variables. Make sure to omit your tokens if you ever share your code (as I&rsquo;ve done above).</p>
+
+<p>The above code creates an object that records any tweet that contains any of the strings that I have listed in the bottom line. Four properties of the tweet are recorded: the text, the date and time, the GPS location (if given), and the source (Twitter client) of the tweet. These four properties are collected in a dictionary variable called <code>data</code> and inserted into a MongoDB database.</p>
+
+<p>Why MongoDB? Because NoSQL is the new SQL? No, because MongoDB is what the code that I copied used. The code uses <a href="http://api.mongodb.org/python/current/">PyMongo</a>, a Python library for interacting with MongoDB. For this application, I do not think that it really matters what type of database you use - you could just as well use MySQL or something.</p>
+
+<p>Depending on your filter terms that you want to track, you may end up collecting a <em>lot</em> of tweets. In that scenario, you may want to set a limit to the total number of tweets that you collect. To do this, initialize a variable</p>
+
+<pre><code class="language-python">self.tweetCount = 0
+</code></pre>
+
+<p>in the <code>__init__</code> function. Then, place the following code in the <code>on_status</code> function:</p>
+
+<pre><code class="language-python">cap = 10000 # Whatever number you want
+self.tweetCount+=1
+if self.tweetCount &lt; cap:
+    return True
+else:
+    return False
+</code></pre>
+
+<p>Just do not forget to remove this code when you do not want a cap! That is why I am writing this post about Bonnaroo instead of the Governor&rsquo;s Ball music festival (for which I have exactly 10,000 tweets if anybody wants them).</p>
+
+<p>So, if you can install Python, MongoDB, and the Tweepy and PyMongo libraries, then you can track tweets. Bonnaroo ran from June 12th to June 15th this year. I started collecting tweets on the afternoon of the 11th because I was hoping to hear some chatter from people traveling to Tennessee. I stopped the tweet collection during the afternoon of the 16th in order to collect the backend of the chatter. And somehow, the code just ran, I never got disconnected, and I ended up with <strong>157,600</strong> tweets. In the next post, I will finally write about the data that was collected.</p>
+
+              </article>
+
+              <div class="pagination">
+                  
+                      <a href="http://ethanrosenthal.com/2014/08/22/hello-world/">&laquo; Setting up a website and separate blog repository hosted on GitHub</a>
+                  
+                  
+                      <a href="http://ethanrosenthal.com/2014/09/09/festival-chatter-part2/">Festival Chatter (Part 2) - Evaluating Band Popularity from Bonnaroo Tweets &raquo;</a>
+                  
+              </div>
+          </section>
+          <br>
+          <section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view comments powered by <a href="http://disqus.com/?ref_noscript">Disqus</a>.</noscript>
+</section>
+
+      </section>
+
+    </main>
+    <footer class="row middle-xs center-xs">
+
+  
+  
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://github.com/EthanRosenthal">GitHub</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://linkedin.com/in/ethanrosenthal">LinkedIn</a></div>
+  
+
+  
+    <div class="col-xs-3 col-md-2"><a target="_blank" href="https://twitter.com/eprosenthal">Twitter</a></div>
+  
+
+  
+    <div class="col-xs-12">
+      
+        Copyright &copy; 2018 ethan rosenthal.
+      
+      
+        <a href="https://tomanistor.com" target="_blank">Theme developed by Toma Nistor</a>
+      
+    </div>
+  
+
+</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+  <script src="http://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
+
+
+  </body>
+</html>
