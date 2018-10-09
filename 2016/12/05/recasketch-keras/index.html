@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer-when-downgrade">
   <meta name="generator" content="">
-  <base href="http://ethanrosenthal.com">
+  <base href="https://ethanrosenthal.com">
 
   
     <meta name="description" content="To close out our series on building recommendation models using Sketchfab data, I will venture far from the previous posts&rsquo; factorization-based methods and instead explore an unsupervised, deep learning-based model. You&rsquo;ll find that the implementation is fairly simple with remarkably promising results which is almost a smack in the face to all of that effort put in earlier.
@@ -38,10 +38,10 @@ We are going to build a model-to-model recommender using thumbnail images of 3D 
 
   <meta property="og:title" content="Using Keras&#39; Pretrained Neural Networks for Visual Similarity Recommendations | ethan rosenthal">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="http://ethanrosenthal.com">
+  <meta property="og:url" content="https://ethanrosenthal.com">
 
   
-    <meta property="og:image" content="http://ethanrosenthal.com/images/profile_pic2.jpg">
+    <meta property="og:image" content="https://ethanrosenthal.com/images/profile_pic2.jpg">
   
 
   
@@ -54,11 +54,11 @@ We are going to build a model-to-model recommender using thumbnail images of 3D 
     <meta name="theme-color" content="#FFF">
   
 
-  <link rel="canonical" href="http://ethanrosenthal.com/2016/12/05/recasketch-keras/">
+  <link rel="canonical" href="https://ethanrosenthal.com/2016/12/05/recasketch-keras/">
 
   
 
-  <link rel="stylesheet" href="http://ethanrosenthal.com/styles/main.css" type="text/css">
+  <link rel="stylesheet" href="https://ethanrosenthal.com/styles/main.css" type="text/css">
 
   
 
@@ -71,7 +71,7 @@ We are going to build a model-to-model recommender using thumbnail images of 3D 
   
 
   
-    <link href="http://ethanrosenthal.comcss/dataframe.css" rel="stylesheet" type="text/css">
+    <link href="https://ethanrosenthal.comcss/dataframe.css" rel="stylesheet" type="text/css">
   
 
   
@@ -84,11 +84,11 @@ We are going to build a model-to-model recommender using thumbnail images of 3D 
 
 <nav class="row middle-xs center-xs">
   <div class="col-xs-6 col-sm-1 logo">
-    <a href="http://ethanrosenthal.com#"><img src="http://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
+    <a href="https://ethanrosenthal.com#"><img src="https://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
   </div>
     
       <div class="col-xs-3 col-sm-2">
-        <h3><a href="http://ethanrosenthal.com/#blog">Blog</a></h3>
+        <h3><a href="https://ethanrosenthal.com/#blog">Blog</a></h3>
       </div>
     
       <div class="col-xs-3 col-sm-2">
@@ -96,11 +96,11 @@ We are going to build a model-to-model recommender using thumbnail images of 3D 
       </div>
     
       <div class="col-xs-3 col-sm-2">
-        <h3><a href="http://ethanrosenthal.com/#about">About</a></h3>
+        <h3><a href="https://ethanrosenthal.com/#about">About</a></h3>
       </div>
     
   <div class="col-xs-6 col-sm-1 nav-toggle">
-      <a href="" class="nav-icon" onclick="return false"><img src="http://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="http://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
+      <a href="" class="nav-icon" onclick="return false"><img src="https://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="https://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
   </div>
 </nav>
 
@@ -108,11 +108,11 @@ We are going to build a model-to-model recommender using thumbnail images of 3D 
   <div class="col-xs-12">
     <div class="row middle-xs center-xs">
       
-        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#blog">Blog</a></h1></div>
+        <div class="col-xs-12"><h1><a href="https://ethanrosenthal.com/#blog">Blog</a></h1></div>
       
         <div class="col-xs-12"><h1><a href="https://physics.ethanrosenthal.com">Physics</a></h1></div>
       
-        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#about">About</a></h1></div>
+        <div class="col-xs-12"><h1><a href="https://ethanrosenthal.com/#about">About</a></h1></div>
       
     </div>
   </div>
@@ -136,7 +136,7 @@ We are going to build a model-to-model recommender using thumbnail images of 3D 
 
 <!-- PELICAN_BEGIN_SUMMARY -->
 
-<p>To close out our series on building recommendation models using <a href="http://ethanrosenthal.com/2016/10/09/likes-out-guerilla-dataset/">Sketchfab data</a>, I will venture far from the <a href="http://ethanrosenthal.com/2016/10/19/implicit-mf-part-1/">previous</a> <a href="{{ ref &quot;blog/implicit-mf-part-2&quot; &gt;}}">posts&rsquo;</a> factorization-based methods and instead explore an unsupervised, deep learning-based model. You&rsquo;ll find that the implementation is fairly simple with remarkably promising results which is almost a smack in the face to all of that effort put in earlier.</p>
+<p>To close out our series on building recommendation models using <a href="https://ethanrosenthal.com/2016/10/09/likes-out-guerilla-dataset/">Sketchfab data</a>, I will venture far from the <a href="https://ethanrosenthal.com/2016/10/19/implicit-mf-part-1/">previous</a> <a href="{{ ref &quot;blog/implicit-mf-part-2&quot; &gt;}}">posts&rsquo;</a> factorization-based methods and instead explore an unsupervised, deep learning-based model. You&rsquo;ll find that the implementation is fairly simple with remarkably promising results which is almost a smack in the face to all of that effort put in earlier.</p>
 
 <!-- PELICAN_END_SUMMARY -->
 
@@ -226,7 +226,7 @@ import helpers
 
 <figure>
     
-        <img src="http://ethanrosenthal.com/2016/12/05/recasketch-keras/./index_3_0.jpeg"/> </figure>
+        <img src="https://ethanrosenthal.com/2016/12/05/recasketch-keras/./index_3_0.jpeg"/> </figure>
 
 
 <p></div>
@@ -616,10 +616,10 @@ def display_thumbs(thumbs, mids, N=5):
 
               <div class="pagination">
                   
-                      <a href="http://ethanrosenthal.com/2016/11/07/implicit-mf-part-2/">&laquo; Learning to Rank Sketchfab Models with LightFM</a>
+                      <a href="https://ethanrosenthal.com/2016/11/07/implicit-mf-part-2/">&laquo; Learning to Rank Sketchfab Models with LightFM</a>
                   
                   
-                      <a href="http://ethanrosenthal.com/2017/02/05/rec-a-sketch/">Rec-a-Sketch: a Flask App for Interactive Sketchfab Recommendations &raquo;</a>
+                      <a href="https://ethanrosenthal.com/2017/02/05/rec-a-sketch/">Rec-a-Sketch: a Flask App for Interactive Sketchfab Recommendations &raquo;</a>
                   
               </div>
           </section>
@@ -692,7 +692,7 @@ def display_thumbs(thumbs, mids, N=5):
     </script>
 
 
-  <script src="http://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
+  <script src="https://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
 
 
   </body>

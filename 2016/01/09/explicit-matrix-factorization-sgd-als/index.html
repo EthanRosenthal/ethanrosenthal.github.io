@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer-when-downgrade">
   <meta name="generator" content="">
-  <base href="http://ethanrosenthal.com">
+  <base href="https://ethanrosenthal.com">
 
   
     <meta name="description" content="In my last post, I described user- and item-based collaborative filtering which are some of the simplest recommendation algorithms. For someone who is used to conventional machine learning classification and regression algorithms, collaborative filtering may have felt a bit off. To me, machine learning almost always deals with some function which we are trying to maximize or minimize. In simple linear regression, we minimize the mean squared distance between our predictions and the true values.">
@@ -37,10 +37,10 @@
 
   <meta property="og:title" content="Explicit Matrix Factorization: ALS, SGD, and All That Jazz | ethan rosenthal">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="http://ethanrosenthal.com">
+  <meta property="og:url" content="https://ethanrosenthal.com">
 
   
-    <meta property="og:image" content="http://ethanrosenthal.com/images/profile_pic2.jpg">
+    <meta property="og:image" content="https://ethanrosenthal.com/images/profile_pic2.jpg">
   
 
   
@@ -52,11 +52,11 @@
     <meta name="theme-color" content="#FFF">
   
 
-  <link rel="canonical" href="http://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/">
+  <link rel="canonical" href="https://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/">
 
   
 
-  <link rel="stylesheet" href="http://ethanrosenthal.com/styles/main.css" type="text/css">
+  <link rel="stylesheet" href="https://ethanrosenthal.com/styles/main.css" type="text/css">
 
   
 
@@ -80,11 +80,11 @@
 
 <nav class="row middle-xs center-xs">
   <div class="col-xs-6 col-sm-1 logo">
-    <a href="http://ethanrosenthal.com#"><img src="http://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
+    <a href="https://ethanrosenthal.com#"><img src="https://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
   </div>
     
       <div class="col-xs-3 col-sm-2">
-        <h3><a href="http://ethanrosenthal.com/#blog">Blog</a></h3>
+        <h3><a href="https://ethanrosenthal.com/#blog">Blog</a></h3>
       </div>
     
       <div class="col-xs-3 col-sm-2">
@@ -92,11 +92,11 @@
       </div>
     
       <div class="col-xs-3 col-sm-2">
-        <h3><a href="http://ethanrosenthal.com/#about">About</a></h3>
+        <h3><a href="https://ethanrosenthal.com/#about">About</a></h3>
       </div>
     
   <div class="col-xs-6 col-sm-1 nav-toggle">
-      <a href="" class="nav-icon" onclick="return false"><img src="http://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="http://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
+      <a href="" class="nav-icon" onclick="return false"><img src="https://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="https://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
   </div>
 </nav>
 
@@ -104,11 +104,11 @@
   <div class="col-xs-12">
     <div class="row middle-xs center-xs">
       
-        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#blog">Blog</a></h1></div>
+        <div class="col-xs-12"><h1><a href="https://ethanrosenthal.com/#blog">Blog</a></h1></div>
       
         <div class="col-xs-12"><h1><a href="https://physics.ethanrosenthal.com">Physics</a></h1></div>
       
-        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#about">About</a></h1></div>
+        <div class="col-xs-12"><h1><a href="https://ethanrosenthal.com/#about">About</a></h1></div>
       
     </div>
   </div>
@@ -132,7 +132,7 @@
 
 <!-- PELICAN_BEGIN_SUMMARY -->
 
-<p>In my last <a href="http://ethanrosenthal.com/2015/11/02/intro-to-collaborative-filtering/">post</a>, I described user- and item-based collaborative filtering which are some of the simplest recommendation algorithms. For someone who is used to conventional machine learning classification and regression algorithms, collaborative filtering may have felt a bit <em>off</em>. To me, machine learning almost always deals with some function which we are trying to maximize or minimize. In simple linear regression, we minimize the mean squared distance between our predictions and the true values. Logistic regression involves maximizing a likelihood function. However, in my post on collaborative filtering, we randomly tried a bunch of different parameters (distance function, top-k cutoff) and watched what happened to the mean squared error. This sure doesn&rsquo;t feel like machine <em>learning</em>.</p>
+<p>In my last <a href="https://ethanrosenthal.com/2015/11/02/intro-to-collaborative-filtering/">post</a>, I described user- and item-based collaborative filtering which are some of the simplest recommendation algorithms. For someone who is used to conventional machine learning classification and regression algorithms, collaborative filtering may have felt a bit <em>off</em>. To me, machine learning almost always deals with some function which we are trying to maximize or minimize. In simple linear regression, we minimize the mean squared distance between our predictions and the true values. Logistic regression involves maximizing a likelihood function. However, in my post on collaborative filtering, we randomly tried a bunch of different parameters (distance function, top-k cutoff) and watched what happened to the mean squared error. This sure doesn&rsquo;t feel like machine <em>learning</em>.</p>
 
 <!-- PELICAN_END_SUMMARY -->
 
@@ -524,7 +524,7 @@ def plot_learning_curve(iter_array, model):
 
 <figure>
     
-        <img src="http://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/./index_10_0.png"/> </figure>
+        <img src="https://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/./index_10_0.png"/> </figure>
 
 
 <p></div>
@@ -570,7 +570,7 @@ MF_ALS.calculate_learning_curve(iter_array, test)
 
 <figure>
     
-        <img src="http://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/./index_13_0.png"/> </figure>
+        <img src="https://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/./index_13_0.png"/> </figure>
 
 
 <p></div>
@@ -712,14 +712,14 @@ plot_learning_curve(iter_array, best_als_model)
 
 <figure>
     
-        <img src="http://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/./index_16_0.png"/> </figure>
+        <img src="https://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/./index_16_0.png"/> </figure>
 
 
 <p></div>
 <div class="jupyter-cell markdown">
 </p>
 
-<p>So it looks like the best performing parameters were 20 factors and a regularization value of 0.01. I would like to again look at the movie-to-movie similarity like my previous <a href="http://ethanrosenthal.com/2015/11/02/intro-to-collaborative-filtering/">post</a>, but let&rsquo;s first explore the other minimization algorithm: stochastic gradient descent (SGD).</p>
+<p>So it looks like the best performing parameters were 20 factors and a regularization value of 0.01. I would like to again look at the movie-to-movie similarity like my previous <a href="https://ethanrosenthal.com/2015/11/02/intro-to-collaborative-filtering/">post</a>, but let&rsquo;s first explore the other minimization algorithm: stochastic gradient descent (SGD).</p>
 
 <h2 id="stochastic-gradient-descent">Stochastic Gradient Descent</h2>
 
@@ -1057,7 +1057,7 @@ Test mse: 0.922782112511
 
 <figure>
     
-        <img src="http://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/./index_21_0.png"/> </figure>
+        <img src="https://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/./index_21_0.png"/> </figure>
 
 
 <p></div>
@@ -1283,7 +1283,7 @@ Regularization: 1.0
 
 <figure>
     
-        <img src="http://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/./index_26_0.png"/> </figure>
+        <img src="https://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/./index_26_0.png"/> </figure>
 
 
 <p></div>
@@ -1666,10 +1666,10 @@ compare_recs(als_sim, sgd_sim, idx_to_movie, idx, base_url, api_key)
 
               <div class="pagination">
                   
-                      <a href="http://ethanrosenthal.com/2015/11/02/intro-to-collaborative-filtering/">&laquo; Intro to Recommender Systems: Collaborative Filtering</a>
+                      <a href="https://ethanrosenthal.com/2015/11/02/intro-to-collaborative-filtering/">&laquo; Intro to Recommender Systems: Collaborative Filtering</a>
                   
                   
-                      <a href="http://ethanrosenthal.com/2016/07/20/lets-talk-or/">I&#39;m all about ML, but let&#39;s talk about OR &raquo;</a>
+                      <a href="https://ethanrosenthal.com/2016/07/20/lets-talk-or/">I&#39;m all about ML, but let&#39;s talk about OR &raquo;</a>
                   
               </div>
           </section>
@@ -1742,7 +1742,7 @@ compare_recs(als_sim, sgd_sim, idx_to_movie, idx, base_url, api_key)
     </script>
 
 
-  <script src="http://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
+  <script src="https://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
 
 
   </body>

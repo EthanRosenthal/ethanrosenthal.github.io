@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer-when-downgrade">
   <meta name="generator" content="">
-  <base href="http://ethanrosenthal.com">
+  <base href="https://ethanrosenthal.com">
 
   
     <meta name="description" content="Hey, remember when I wrote those ungodly long posts about matrix factorization chock-full of gory math? Good news! You can forget it all. We have now entered the Era of Deep Learning, and automatic differentiation shall be our guiding light.
@@ -39,10 +39,10 @@ In this post, I will show you how to use PyTorch to bypass the mess of code from
 
   <meta property="og:title" content="Matrix Factorization in PyTorch | ethan rosenthal">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="http://ethanrosenthal.com">
+  <meta property="og:url" content="https://ethanrosenthal.com">
 
   
-    <meta property="og:image" content="http://ethanrosenthal.com/images/profile_pic2.jpg">
+    <meta property="og:image" content="https://ethanrosenthal.com/images/profile_pic2.jpg">
   
 
   
@@ -56,11 +56,11 @@ In this post, I will show you how to use PyTorch to bypass the mess of code from
     <meta name="theme-color" content="#FFF">
   
 
-  <link rel="canonical" href="http://ethanrosenthal.com/2017/06/20/matrix-factorization-in-pytorch/">
+  <link rel="canonical" href="https://ethanrosenthal.com/2017/06/20/matrix-factorization-in-pytorch/">
 
   
 
-  <link rel="stylesheet" href="http://ethanrosenthal.com/styles/main.css" type="text/css">
+  <link rel="stylesheet" href="https://ethanrosenthal.com/styles/main.css" type="text/css">
 
   
 
@@ -71,7 +71,7 @@ In this post, I will show you how to use PyTorch to bypass the mess of code from
   
 
   
-    <link href="http://ethanrosenthal.comcss/dataframe.css" rel="stylesheet" type="text/css">
+    <link href="https://ethanrosenthal.comcss/dataframe.css" rel="stylesheet" type="text/css">
   
 
   
@@ -84,11 +84,11 @@ In this post, I will show you how to use PyTorch to bypass the mess of code from
 
 <nav class="row middle-xs center-xs">
   <div class="col-xs-6 col-sm-1 logo">
-    <a href="http://ethanrosenthal.com#"><img src="http://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
+    <a href="https://ethanrosenthal.com#"><img src="https://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
   </div>
     
       <div class="col-xs-3 col-sm-2">
-        <h3><a href="http://ethanrosenthal.com/#blog">Blog</a></h3>
+        <h3><a href="https://ethanrosenthal.com/#blog">Blog</a></h3>
       </div>
     
       <div class="col-xs-3 col-sm-2">
@@ -96,11 +96,11 @@ In this post, I will show you how to use PyTorch to bypass the mess of code from
       </div>
     
       <div class="col-xs-3 col-sm-2">
-        <h3><a href="http://ethanrosenthal.com/#about">About</a></h3>
+        <h3><a href="https://ethanrosenthal.com/#about">About</a></h3>
       </div>
     
   <div class="col-xs-6 col-sm-1 nav-toggle">
-      <a href="" class="nav-icon" onclick="return false"><img src="http://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="http://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
+      <a href="" class="nav-icon" onclick="return false"><img src="https://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="https://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
   </div>
 </nav>
 
@@ -108,11 +108,11 @@ In this post, I will show you how to use PyTorch to bypass the mess of code from
   <div class="col-xs-12">
     <div class="row middle-xs center-xs">
       
-        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#blog">Blog</a></h1></div>
+        <div class="col-xs-12"><h1><a href="https://ethanrosenthal.com/#blog">Blog</a></h1></div>
       
         <div class="col-xs-12"><h1><a href="https://physics.ethanrosenthal.com">Physics</a></h1></div>
       
-        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#about">About</a></h1></div>
+        <div class="col-xs-12"><h1><a href="https://ethanrosenthal.com/#about">About</a></h1></div>
       
     </div>
   </div>
@@ -136,7 +136,7 @@ In this post, I will show you how to use PyTorch to bypass the mess of code from
 
 <!-- PELICAN_BEGIN_SUMMARY -->
 
-<p>Hey, remember when I wrote those <a href="http://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/">ungodly</a> <a href="http://ethanrosenthal.com/2016/10/19/implicit-mf-part-1/">long</a> <a href="http://ethanrosenthal.com/2016/11/07/implicit-mf-part-2/">posts</a> about matrix factorization chock-full of gory math? Good news! You can forget it all. We have now entered the Era of Deep Learning, and automatic differentiation shall be our guiding light.</p>
+<p>Hey, remember when I wrote those <a href="https://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/">ungodly</a> <a href="https://ethanrosenthal.com/2016/10/19/implicit-mf-part-1/">long</a> <a href="https://ethanrosenthal.com/2016/11/07/implicit-mf-part-2/">posts</a> about matrix factorization chock-full of gory math? Good news! You can forget it all. We have now entered the Era of Deep Learning, and automatic differentiation shall be our guiding light.</p>
 
 <!-- PELICAN_END_SUMMARY -->
 
@@ -441,10 +441,10 @@ for row, col in zip(*(rows, cols)):
 
               <div class="pagination">
                   
-                      <a href="http://ethanrosenthal.com/2017/03/20/analytical-numerical-universal/">&laquo; From Analytical to Numerical to Universal Solutions</a>
+                      <a href="https://ethanrosenthal.com/2017/03/20/analytical-numerical-universal/">&laquo; From Analytical to Numerical to Universal Solutions</a>
                   
                   
-                      <a href="http://ethanrosenthal.com/2018/01/28/time-series-for-scikit-learn-people-part1/">Time Series for scikit-learn People (Part I): Where&#39;s the X Matrix? &raquo;</a>
+                      <a href="https://ethanrosenthal.com/2018/01/28/time-series-for-scikit-learn-people-part1/">Time Series for scikit-learn People (Part I): Where&#39;s the X Matrix? &raquo;</a>
                   
               </div>
           </section>
@@ -501,7 +501,7 @@ for row, col in zip(*(rows, cols)):
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 
 
-  <script src="http://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
+  <script src="https://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
 
 
   </body>

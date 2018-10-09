@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer-when-downgrade">
   <meta name="generator" content="">
-  <base href="http://ethanrosenthal.com">
+  <base href="https://ethanrosenthal.com">
 
   
     <meta name="description" content="&ndash; Zack de la Rocha
@@ -39,10 +39,10 @@ In a previous post, I wrote about how to use matrix factorization and explicit f
 
   <meta property="og:title" content="Likes Out! Guerilla Dataset! | ethan rosenthal">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="http://ethanrosenthal.com">
+  <meta property="og:url" content="https://ethanrosenthal.com">
 
   
-    <meta property="og:image" content="http://ethanrosenthal.com/images/profile_pic2.jpg">
+    <meta property="og:image" content="https://ethanrosenthal.com/images/profile_pic2.jpg">
   
 
   
@@ -56,11 +56,11 @@ In a previous post, I wrote about how to use matrix factorization and explicit f
     <meta name="theme-color" content="#FFF">
   
 
-  <link rel="canonical" href="http://ethanrosenthal.com/2016/10/09/likes-out-guerilla-dataset/">
+  <link rel="canonical" href="https://ethanrosenthal.com/2016/10/09/likes-out-guerilla-dataset/">
 
   
 
-  <link rel="stylesheet" href="http://ethanrosenthal.com/styles/main.css" type="text/css">
+  <link rel="stylesheet" href="https://ethanrosenthal.com/styles/main.css" type="text/css">
 
   
 
@@ -71,7 +71,7 @@ In a previous post, I wrote about how to use matrix factorization and explicit f
   
 
   
-    <link href="http://ethanrosenthal.comcss/dataframe.css" rel="stylesheet" type="text/css">
+    <link href="https://ethanrosenthal.comcss/dataframe.css" rel="stylesheet" type="text/css">
   
 
   
@@ -84,11 +84,11 @@ In a previous post, I wrote about how to use matrix factorization and explicit f
 
 <nav class="row middle-xs center-xs">
   <div class="col-xs-6 col-sm-1 logo">
-    <a href="http://ethanrosenthal.com#"><img src="http://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
+    <a href="https://ethanrosenthal.com#"><img src="https://ethanrosenthal.com/images/profile_pic2.jpg" alt="ethan rosenthal"></a>
   </div>
     
       <div class="col-xs-3 col-sm-2">
-        <h3><a href="http://ethanrosenthal.com/#blog">Blog</a></h3>
+        <h3><a href="https://ethanrosenthal.com/#blog">Blog</a></h3>
       </div>
     
       <div class="col-xs-3 col-sm-2">
@@ -96,11 +96,11 @@ In a previous post, I wrote about how to use matrix factorization and explicit f
       </div>
     
       <div class="col-xs-3 col-sm-2">
-        <h3><a href="http://ethanrosenthal.com/#about">About</a></h3>
+        <h3><a href="https://ethanrosenthal.com/#about">About</a></h3>
       </div>
     
   <div class="col-xs-6 col-sm-1 nav-toggle">
-      <a href="" class="nav-icon" onclick="return false"><img src="http://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="http://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
+      <a href="" class="nav-icon" onclick="return false"><img src="https://ethanrosenthal.com/images/icon-menu.png" alt="Open Menu"><img src="https://ethanrosenthal.com/images/icon-x.png" alt="Close Menu" style="display: none;"></a>
   </div>
 </nav>
 
@@ -108,11 +108,11 @@ In a previous post, I wrote about how to use matrix factorization and explicit f
   <div class="col-xs-12">
     <div class="row middle-xs center-xs">
       
-        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#blog">Blog</a></h1></div>
+        <div class="col-xs-12"><h1><a href="https://ethanrosenthal.com/#blog">Blog</a></h1></div>
       
         <div class="col-xs-12"><h1><a href="https://physics.ethanrosenthal.com">Physics</a></h1></div>
       
-        <div class="col-xs-12"><h1><a href="http://ethanrosenthal.com/#about">About</a></h1></div>
+        <div class="col-xs-12"><h1><a href="https://ethanrosenthal.com/#about">About</a></h1></div>
       
     </div>
   </div>
@@ -142,7 +142,7 @@ In a previous post, I wrote about how to use matrix factorization and explicit f
 
 <!-- PELICAN_END_SUMMARY -->
 
-<p>In a previous <a href="http://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/">post</a>, I wrote about how to use matrix factorization and explicit feedback data in order to build recommendation systems. This is data where a user has given a clear preference for an item such as a star rating for an Amazon product or a numerical rating for a movie like in the <a href="http://grouplens.org/datasets/movielens/">MovieLens</a> data. A natural next step is to discuss recommendation systems for implicit feedback which is data where a user has shown a <em>preference</em> for an item like &ldquo;number of minutes listened&rdquo; for a song on Spotify or &ldquo;number of times clicked&rdquo; for a product on a website.</p>
+<p>In a previous <a href="https://ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/">post</a>, I wrote about how to use matrix factorization and explicit feedback data in order to build recommendation systems. This is data where a user has given a clear preference for an item such as a star rating for an Amazon product or a numerical rating for a movie like in the <a href="http://grouplens.org/datasets/movielens/">MovieLens</a> data. A natural next step is to discuss recommendation systems for implicit feedback which is data where a user has shown a <em>preference</em> for an item like &ldquo;number of minutes listened&rdquo; for a song on Spotify or &ldquo;number of times clicked&rdquo; for a product on a website.</p>
 
 <p>Implicit feedback-based techniques likely consitute the majority of modern recommender systems. When I set out to write a post on these techniques, I found it difficult to find suitable data. This makes sense - most companies are loathe to share users&rsquo; click or usage data (and for good reasons). A cursory google search revealed a couple datasets that people use, but I kept finding issues with these datasets. For example, the million song database was shown to have <a href="http://labrosa.ee.columbia.edu/millionsong/blog/12-1-2-matching-errors-taste-profile-and-msd">some</a> <a href="http://labrosa.ee.columbia.edu/millionsong/blog/12-2-12-fixing-matching-errors">issues</a> with data quality, while many <a href="http://link.springer.com/chapter/10.1007%2F978-3-642-33486-3_5">other</a> <a href="http://dl.acm.org/citation.cfm?id=2799671">people</a> just repurposed the MovieLens or Netflix data as though it was implicit (which it is not).</p>
 
@@ -223,7 +223,7 @@ BROWSER = webdriver.Chrome(chromedriver)
 
 <p>Upon opening the main models page, you can open the chrome developer tools (ctrl-shift-i in linux) to reveal the HTML structure of the page. This looks like the following (click to view full-size):</p>
 
-<p><a href="http://ethanrosenthal.com/images/sketchfab_pop_models.png"><img src="http://ethanrosenthal.com/images/sketchfab_pop_models.png" alt="main page" /></a></p>
+<p><a href="https://ethanrosenthal.com/images/sketchfab_pop_models.png"><img src="https://ethanrosenthal.com/images/sketchfab_pop_models.png" alt="main page" /></a></p>
 
 <p>Looking through the HTML reveals that all of the displayed 3D models are housed in a <code>&lt;div&gt;</code> of class <code>infinite-grid</code>. Each 3D model is inside of a <code>&lt;li&gt;</code> element with class <code>item</code>. One can grab the list of all these list elements as follows:</p>
 
@@ -358,10 +358,10 @@ python crawl.py config.yml --type features
 
               <div class="pagination">
                   
-                      <a href="http://ethanrosenthal.com/2016/08/30/towards-optimal-personalization/">&laquo; Towards optimal personalization: synthesisizing machine learning and operations research</a>
+                      <a href="https://ethanrosenthal.com/2016/08/30/towards-optimal-personalization/">&laquo; Towards optimal personalization: synthesisizing machine learning and operations research</a>
                   
                   
-                      <a href="http://ethanrosenthal.com/2016/10/19/implicit-mf-part-1/">Intro to Implicit Matrix Factorization: Classic ALS with Sketchfab Models &raquo;</a>
+                      <a href="https://ethanrosenthal.com/2016/10/19/implicit-mf-part-1/">Intro to Implicit Matrix Factorization: Classic ALS with Sketchfab Models &raquo;</a>
                   
               </div>
           </section>
@@ -418,7 +418,7 @@ python crawl.py config.yml --type features
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 
 
-  <script src="http://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
+  <script src="https://ethanrosenthal.com/scripts/main.min.js" type="text/javascript"></script>
 
 
   </body>
